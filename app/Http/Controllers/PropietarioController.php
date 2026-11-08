@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Propietario;
 use App\Models\Veterinario;
+use App\Http\Requests\PropietarioRequest;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
@@ -32,27 +33,9 @@ class PropietarioController extends Controller
     /**
      * Guardar un propietario nuevo.
      */
-    public function store(Request $request)
+    public function store(PropietarioRequest $request)
     {
-        $validated = $request->validate([
-            'dni' => ['required', 'string', 'max:20', 'unique:propietarios,dni'],
-            'nombre' => ['required', 'string', 'max:255'],
-            'apellido' => ['required', 'string', 'max:255'],
-            'localidad' => ['required', 'string', 'max:255'],
-            'telefono' => ['required', 'string', 'max:50'],
-            'calle' => ['required', 'string', 'max:255'],
-            'altura' => ['required', 'string', 'max:20'],
-            'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
-        ], [
-            'dni.required' => 'Ingresá el DNI del propietario.',
-            'dni.unique' => 'Ya existe un propietario registrado con ese DNI.',
-            'nombre.required' => 'Ingresá el nombre.',
-            'apellido.required' => 'Ingresá el apellido.',
-            'localidad.required' => 'Ingresá la localidad.',
-            'telefono.required' => 'Ingresá un teléfono de contacto.',
-            'calle.required' => 'Ingresá la calle.',
-            'altura.required' => 'Ingresá la altura.',
-        ]);
+        $validated = $request->validated();
 
         Propietario::create($validated);
 
@@ -75,24 +58,9 @@ class PropietarioController extends Controller
      * El DNI no se puede modificar porque es la clave primaria y otras
      * tablas (mascotas) lo usan como referencia.
      */
-    public function update(Request $request, Propietario $propietario)
+    public function update(PropietarioRequest $request, Propietario $propietario)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:255'],
-            'apellido' => ['required', 'string', 'max:255'],
-            'localidad' => ['required', 'string', 'max:255'],
-            'telefono' => ['required', 'string', 'max:50'],
-            'calle' => ['required', 'string', 'max:255'],
-            'altura' => ['required', 'string', 'max:20'],
-            'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
-        ], [
-            'nombre.required' => 'Ingresá el nombre.',
-            'apellido.required' => 'Ingresá el apellido.',
-            'localidad.required' => 'Ingresá la localidad.',
-            'telefono.required' => 'Ingresá un teléfono de contacto.',
-            'calle.required' => 'Ingresá la calle.',
-            'altura.required' => 'Ingresá la altura.',
-        ]);
+        $validated = $request->validated();
 
         $propietario->update($validated);
 

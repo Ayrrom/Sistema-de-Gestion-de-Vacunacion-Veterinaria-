@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mascota;
 use App\Models\Propietario;
+use App\Http\Requests\MascotaRequest;
 use Illuminate\Http\Request;
 
 class MascotaController extends Controller
@@ -43,35 +44,9 @@ class MascotaController extends Controller
     /**
      * Guardar una mascota nueva.
      */
-    public function store(Request $request)
+    public function store(MascotaRequest $request)
     {
-        $validated = $request->validate([
-            'propietario_dni' => ['required', 'string', 'exists:propietarios,dni'],
-            'nombre' => ['required', 'string', 'max:255'],
-            'especie' => ['required', 'string', 'max:100'],
-            'raza' => ['required', 'string', 'max:100'],
-            'sexo' => ['required', 'string', 'max:20'],
-            'peso' => ['required', 'numeric', 'min:0'],
-            'edad' => ['required', 'integer', 'min:0'],
-            'tipo_pelaje' => ['required', 'string', 'max:100'],
-            'fecha_nacimiento' => ['nullable', 'date'],
-            'color' => ['nullable', 'string', 'max:100'],
-            'procedencia' => ['nullable', 'string', 'max:255'],
-            'senas_particulares' => ['nullable', 'string'],
-        ], [
-            'propietario_dni.exists' => 'El propietario seleccionado no es válido.',
-            'nombre.required' => 'Ingresá el nombre de la mascota.',
-            'especie.required' => 'Seleccioná la especie.',
-            'raza.required' => 'Ingresá la raza.',
-            'sexo.required' => 'Seleccioná el sexo.',
-            'peso.required' => 'Ingresá el peso.',
-            'peso.numeric' => 'El peso tiene que ser un número.',
-            'edad.required' => 'Ingresá la edad.',
-            'edad.integer' => 'La edad tiene que ser un número entero.',
-            'tipo_pelaje.required' => 'Ingresá el tipo de pelaje.',
-        ]);
-
-        $validated['castrado'] = $request->boolean('castrado');
+        $validated = $request->datos();
 
         Mascota::create($validated);
 
@@ -103,33 +78,9 @@ class MascotaController extends Controller
     /**
      * Actualizar una mascota existente.
      */
-    public function update(Request $request, Mascota $mascota)
+    public function update(MascotaRequest $request, Mascota $mascota)
     {
-        $validated = $request->validate([
-            'nombre' => ['required', 'string', 'max:255'],
-            'especie' => ['required', 'string', 'max:100'],
-            'raza' => ['required', 'string', 'max:100'],
-            'sexo' => ['required', 'string', 'max:20'],
-            'peso' => ['required', 'numeric', 'min:0'],
-            'edad' => ['required', 'integer', 'min:0'],
-            'tipo_pelaje' => ['required', 'string', 'max:100'],
-            'fecha_nacimiento' => ['nullable', 'date'],
-            'color' => ['nullable', 'string', 'max:100'],
-            'procedencia' => ['nullable', 'string', 'max:255'],
-            'senas_particulares' => ['nullable', 'string'],
-        ], [
-            'nombre.required' => 'Ingresá el nombre de la mascota.',
-            'especie.required' => 'Seleccioná la especie.',
-            'raza.required' => 'Ingresá la raza.',
-            'sexo.required' => 'Seleccioná el sexo.',
-            'peso.required' => 'Ingresá el peso.',
-            'peso.numeric' => 'El peso tiene que ser un número.',
-            'edad.required' => 'Ingresá la edad.',
-            'edad.integer' => 'La edad tiene que ser un número entero.',
-            'tipo_pelaje.required' => 'Ingresá el tipo de pelaje.',
-        ]);
-
-        $validated['castrado'] = $request->boolean('castrado');
+        $validated = $request->datos();
 
         $mascota->update($validated);
 

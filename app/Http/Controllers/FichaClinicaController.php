@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FichaClinicaRequest;
 use App\Models\Estudiante;
 use App\Models\FichaClinica;
 use App\Models\Mascota;
@@ -48,9 +49,9 @@ class FichaClinicaController extends Controller
     /**
      * Guardar una consulta nueva.
      */
-    public function store(Request $request, Mascota $mascota)
+    public function store(FichaClinicaRequest $request, Mascota $mascota)
     {
-        $validated = $this->validarDatos($request);
+        $validated = $request->validated();
         $validated['mascota_id'] = $mascota->id;
         $validated = $this->completarVeterinario($validated);
         $validated['esquema_completo'] = $request->boolean('esquema_completo');
@@ -88,9 +89,9 @@ class FichaClinicaController extends Controller
     /**
      * Actualizar una consulta existente.
      */
-    public function update(Request $request, FichaClinica $ficha)
+    public function update(FichaClinicaRequest $request, FichaClinica $ficha)
     {
-        $validated = $this->completarVeterinario($this->validarDatos($request));
+        $validated = $this->completarVeterinario($request->validated());
 
         // Si se quitó el veterinario asignado, se borra también su nombre guardado.
         if ($ficha->veterinario_id && empty($validated['veterinario_id'])) {
@@ -119,53 +120,6 @@ class FichaClinicaController extends Controller
             ->with('success', 'Ficha clínica eliminada correctamente.');
     }
 
-    /**
-     * Reglas de validación compartidas entre store y update.
-     */
-    private function validarDatos(Request $request): array
-    {
-        return $request->validate([
-            'fecha_consulta' => ['required', 'date'],
-            'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
-            'estudiantes' => ['nullable', 'array'],
-            'estudiantes.*' => ['integer', 'exists:estudiantes,id'],
-            'motivo_consulta' => ['required', 'string', 'max:255'],
-            'estado' => ['required', 'string', 'in:Saludable,En tratamiento,Revisión'],
-
-            'vacunas_aplicadas' => ['nullable', 'string'],
-
-            'fecha_desparasitacion' => ['nullable', 'date'],
-            'droga_desparasitacion' => ['nullable', 'string', 'max:255'],
-            'producto_desparasitacion' => ['nullable', 'string', 'max:255'],
-
-            'fc' => ['nullable', 'integer', 'min:0'],
-            'fr' => ['nullable', 'integer', 'min:0'],
-            'temperatura' => ['nullable', 'numeric'],
-            'pulso' => ['nullable', 'string', 'max:100'],
-            'tllc' => ['nullable', 'string', 'max:100'],
-            'relacion_entorno' => ['nullable', 'string', 'max:255'],
-
-            'grado_deshidratacion' => ['nullable', 'string', 'in:1-5%,6-7%,8-9%,+10%'],
-
-            'piel_anexos' => ['nullable', 'string', 'in:N,A'],
-            'ojos' => ['nullable', 'string', 'in:N,A'],
-            'oidos' => ['nullable', 'string', 'in:N,A'],
-            'ganglios_linfaticos' => ['nullable', 'string', 'in:N,A'],
-            'conjuntivas_mucosas' => ['nullable', 'string', 'in:N,A'],
-            'sistema_cardiaco' => ['nullable', 'string', 'in:N,A'],
-            'sistema_respiratorio' => ['nullable', 'string', 'in:N,A'],
-            'sistema_digestivo' => ['nullable', 'string', 'in:N,A'],
-            'sistema_urinario' => ['nullable', 'string', 'in:N,A'],
-            'sistema_nervioso' => ['nullable', 'string', 'in:N,A'],
-            'sistema_locomotor' => ['nullable', 'string', 'in:N,A'],
-
-            'condicion_corporal' => ['nullable', 'integer', 'min:1', 'max:5'],
-        ], [
-            'fecha_consulta.required' => 'Ingresá la fecha de la consulta.',
-            'motivo_consulta.required' => 'Ingresá el motivo de la consulta.',
-            'estado.required' => 'Seleccioná el estado del paciente.',
-        ]);
-    }
     /**
      * Veterinarios y estudiantes para los selectores del formulario.
      */
