@@ -209,6 +209,10 @@
             <label class="condicion-opcion {{ $condicionSeleccionada === (string) $valor ? 'selected' : '' }}">
                 <input type="radio" name="condicion_corporal" value="{{ $valor }}" onchange="document.querySelectorAll('.condicion-opcion').forEach(el => el.classList.remove('selected')); this.closest('.condicion-opcion').classList.add('selected');" {{ $condicionSeleccionada === (string) $valor ? 'checked' : '' }}>
                 <img src="{{ asset('images/condicion/' . $imagenEspecie . '-' . $valor . '.jpg') }}" alt="Condición corporal {{ $valor }}: {{ $etiqueta }}">
+                <span class="condicion-texto">
+                    <span class="condicion-numero">{{ $valor }}</span>
+                    {{ $etiqueta }}
+                </span>
             </label>
         @endforeach
     </div>

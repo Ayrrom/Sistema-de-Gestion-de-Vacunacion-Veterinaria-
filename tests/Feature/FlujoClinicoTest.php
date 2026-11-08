@@ -323,6 +323,12 @@ class FlujoClinicoTest extends TestCase
 
         $this->get("/mascotas/{$perro->id}/fichas/create")->assertSee('perro-1.jpg')->assertDontSee('gato-1.jpg');
         $this->get("/mascotas/{$gato->id}/fichas/create")->assertSee('gato-1.jpg')->assertDontSee('perro-1.jpg');
+
+        // Cada opción muestra su nombre debajo de la imagen, en orden.
+        foreach ([$perro, $gato] as $m) {
+            $this->get("/mascotas/{$m->id}/fichas/create")
+                ->assertSeeInOrder(['condicion-texto', 'Caquéctico', 'condicion-texto', 'Delgado', 'condicion-texto', 'Ideal', 'condicion-texto', 'Sobrepeso', 'condicion-texto', 'Obeso']);
+        }
     }
 
     public function test_no_se_elimina_un_propietario_con_mascotas(): void
