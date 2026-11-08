@@ -9,14 +9,64 @@ use Illuminate\Http\Request;
 
 class MascotaController extends Controller
 {
+    /** Especies que se pueden elegir (las mismas del formulario del paciente). */
+    private const ESPECIES = ['Perro', 'Gato'];
+
     /**
      * Listado de mascotas (pacientes).
      */
-    public function index()
+    public function index(Request $request)
     {
-        $mascotas = Mascota::with('propietario')->orderBy('nombre')->paginate(15);
+        $filtros = $this->filtrosDelListado($request);
 
-        return view('mascotas.index', compact('mascotas'));
+        $mascotas = Mascota::with(['propietario', 'ultimaFicha'])
+            // DNI del propietario: los que empiezan con lo escrito
+            ->when($filtros['dni'] !== '', fn ($q) => $q->where('propietario_dni', 'like', $filtros['dni'] . '%'))
+            ->when($filtros['especie'] !== '', fn ($q) => $q->where('especie', $filtros['especie']))
+            // Fecha: pacientes con al menos una consulta dentro del rango
+            ->when($filtros['desde'] || $filtros['hasta'], function ($q) use ($filtros) {
+                $q->whereHas('fichasClinicas', function ($fichas) use ($filtros) {
+                    $fichas->when($filtros['desde'], fn ($f) => $f->whereDate('fecha_consulta', '>=', $filtros['desde']))
+                        ->when($filtros['hasta'], fn ($f) => $f->whereDate('fecha_consulta', '<=', $filtros['hasta']));
+                });
+            })
+            ->orderBy('nombre')
+            ->paginate(15)
+            ->withQueryString();
+
+        $especies = self::ESPECIES;
+        $hayFiltros = $filtros['dni'] !== '' || $filtros['especie'] !== '' || $filtros['desde'] || $filtros['hasta'];
+
+        return view('mascotas.index', compact('mascotas', 'filtros', 'especies', 'hayFiltros'));
+    }
+
+    /**
+     * Lee los filtros del listado. Los valores inválidos se ignoran en vez
+     * de dar error, porque vienen de la barra de direcciones.
+     */
+    private function filtrosDelListado(Request $request): array
+    {
+        $fecha = function ($valor) {
+            $valor = (string) $valor;
+            return preg_match('/^\d{4}-\d{2}-\d{2}$/', $valor) && strtotime($valor) ? $valor : null;
+        };
+
+        $desde = $fecha($request->query('desde'));
+        $hasta = $fecha($request->query('hasta'));
+
+        // Si se cargaron al revés, se invierten.
+        if ($desde && $hasta && $desde > $hasta) {
+            [$desde, $hasta] = [$hasta, $desde];
+        }
+
+        $especie = (string) $request->query('especie', '');
+
+        return [
+            'dni' => substr(preg_replace('/\D/', '', (string) $request->query('dni', '')), 0, 8),
+            'especie' => in_array($especie, self::ESPECIES, true) ? $especie : '',
+            'desde' => $desde,
+            'hasta' => $hasta,
+        ];
     }
 
     /**

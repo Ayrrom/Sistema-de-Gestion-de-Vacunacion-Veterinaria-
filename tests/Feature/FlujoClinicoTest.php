@@ -159,6 +159,101 @@ class FlujoClinicoTest extends TestCase
         $this->get('/propietarios/99999999')->assertNotFound();
     }
 
+    /** Arma 4 pacientes de 2 propietarios con consultas en distintas fechas. */
+    private function pacientesParaFiltrar(): void
+    {
+        $this->post('/propietarios', $this->propietario()); // 30111222
+        $this->post('/propietarios', $this->propietario(['dni' => '41222333', 'nombre' => 'Carlos', 'apellido' => 'Lopez']));
+
+        $consultas = [
+            ['Firulais', 'Perro', '30111222', ['2026-03-10']],
+            ['Michi', 'Gato', '30111222', ['2026-06-15', '2026-11-01']],
+            ['Rocky', 'Perro', '41222333', ['2026-11-01']],
+            ['Pelusa', 'Gato', '41222333', []], // sin consultas
+        ];
+        foreach ($consultas as [$nombre, $especie, $dni, $fechas]) {
+            $this->post('/mascotas', $this->mascota(['nombre' => $nombre, 'especie' => $especie, 'propietario_dni' => $dni]));
+            $m = Mascota::where('nombre', $nombre)->first();
+            foreach ($fechas as $fecha) {
+                FichaClinica::create(['mascota_id' => $m->id, 'fecha_consulta' => $fecha, 'motivo_consulta' => 'X', 'estado' => 'Saludable']);
+            }
+        }
+    }
+
+    /** Nombres de pacientes que aparecen en el listado con esos filtros. */
+    private function pacientesListados(string $query): array
+    {
+        $html = $this->get('/mascotas' . $query)->assertOk()->getContent();
+
+        return array_values(array_filter(['Firulais', 'Michi', 'Rocky', 'Pelusa'], fn ($n) => str_contains($html, "<td>{$n}</td>")));
+    }
+
+    public function test_filtrar_pacientes_por_especie(): void
+    {
+        $this->pacientesParaFiltrar();
+
+        $this->assertSame(['Firulais', 'Michi', 'Rocky', 'Pelusa'], $this->pacientesListados(''));
+        $this->assertSame(['Firulais', 'Rocky'], $this->pacientesListados('?especie=Perro'));
+        $this->assertSame(['Michi', 'Pelusa'], $this->pacientesListados('?especie=Gato'));
+        $this->assertSame(['Firulais', 'Michi', 'Rocky', 'Pelusa'], $this->pacientesListados('?especie=Dinosaurio')); // inválida: se ignora
+    }
+
+    public function test_filtrar_pacientes_por_dni_del_propietario(): void
+    {
+        $this->pacientesParaFiltrar();
+
+        $this->assertSame(['Firulais', 'Michi'], $this->pacientesListados('?dni=30111222'));
+        $this->assertSame(['Rocky', 'Pelusa'], $this->pacientesListados('?dni=41'));      // empieza con
+        $this->assertSame([], $this->pacientesListados('?dni=1222'));                     // no coincide el medio
+        $this->assertSame(['Firulais', 'Michi'], $this->pacientesListados('?dni=30.111')); // se quitan los no números
+    }
+
+    public function test_filtrar_pacientes_por_fecha_de_consulta(): void
+    {
+        $this->pacientesParaFiltrar();
+
+        // Fecha puntual
+        $this->assertSame(['Michi', 'Rocky'], $this->pacientesListados('?desde=2026-11-01&hasta=2026-11-01'));
+        // Rango: Michi entra por su consulta de junio
+        $this->assertSame(['Firulais', 'Michi'], $this->pacientesListados('?desde=2026-03-01&hasta=2026-06-30'));
+        // Solo "desde" o solo "hasta"
+        $this->assertSame(['Michi', 'Rocky'], $this->pacientesListados('?desde=2026-07-01'));
+        $this->assertSame(['Firulais'], $this->pacientesListados('?hasta=2026-04-01'));
+        // Cargadas al revés se invierten
+        $this->assertSame(['Firulais', 'Michi'], $this->pacientesListados('?desde=2026-06-30&hasta=2026-03-01'));
+        // Fecha inválida se ignora
+        $this->assertSame(['Firulais', 'Michi', 'Rocky', 'Pelusa'], $this->pacientesListados('?desde=hola'));
+    }
+
+    public function test_filtros_de_pacientes_combinados(): void
+    {
+        $this->pacientesParaFiltrar();
+
+        $this->assertSame(['Michi'], $this->pacientesListados('?especie=Gato&desde=2026-11-01&hasta=2026-11-01'));
+        $this->assertSame(['Rocky'], $this->pacientesListados('?dni=41&especie=Perro'));
+        $this->assertSame([], $this->pacientesListados('?dni=41&especie=Gato&desde=2026-01-01'));
+
+        $this->get('/mascotas?dni=41&especie=Gato&desde=2026-01-01')
+            ->assertSee('No se encontraron pacientes con esos filtros.')
+            ->assertSee('Limpiar');
+        $this->get('/mascotas?especie=Perro')
+            ->assertSee('2 pacientes encontrados')
+            ->assertSee('<option value="Perro" selected>', false)
+            ->assertSee('01/11/2026'); // columna Última visita de Rocky
+    }
+
+    public function test_los_filtros_de_pacientes_se_mantienen_al_cambiar_de_pagina(): void
+    {
+        $this->post('/propietarios', $this->propietario());
+        foreach (range(1, 17) as $i) {
+            $this->post('/mascotas', $this->mascota(['nombre' => sprintf('Perro %02d', $i)]));
+        }
+
+        $this->get('/mascotas?especie=Perro')
+            ->assertSee('17 pacientes encontrados')
+            ->assertSee('especie=Perro&amp;page=2', false);
+    }
+
     public function test_validaciones_de_propietario_y_paciente(): void
     {
         $this->post('/propietarios', [])->assertSessionHasErrors(['dni', 'nombre', 'apellido', 'localidad', 'telefono', 'calle', 'altura']);
