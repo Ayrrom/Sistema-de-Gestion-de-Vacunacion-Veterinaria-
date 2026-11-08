@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\CrearUsuario;
 use App\Models\User;
 use App\Models\Veterinario;
+use App\Support\Campos;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -43,12 +44,12 @@ class EquipoController extends Controller
     public function store(Request $request, CrearUsuario $crearUsuario)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => Campos::reglas('name', true),
             'dni' => CrearUsuario::REGLAS_DNI,
             'rol' => ['required', Rule::in(array_keys(User::ROLES))],
-            'catedra' => ['nullable', 'string', 'max:255'],
+            'catedra' => Campos::reglas('catedra'),
             'veterinario_id' => ['nullable', Rule::exists('veterinarios', 'id')],
-        ], CrearUsuario::MENSAJES);
+        ], array_merge(CrearUsuario::MENSAJES, Campos::mensajes('name', 'El nombre'), Campos::mensajes('catedra', 'La cátedra')));
 
         $user = $crearUsuario->ejecutar($validated);
 

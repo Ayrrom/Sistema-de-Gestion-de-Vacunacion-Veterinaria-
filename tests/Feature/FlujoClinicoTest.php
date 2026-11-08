@@ -246,7 +246,7 @@ class FlujoClinicoTest extends TestCase
     {
         $this->post('/propietarios', $this->propietario());
         foreach (range(1, 17) as $i) {
-            $this->post('/mascotas', $this->mascota(['nombre' => sprintf('Perro %02d', $i)]));
+            $this->post('/mascotas', $this->mascota(['nombre' => 'Perro ' . chr(64 + $i)]));
         }
 
         $this->get('/mascotas?especie=Perro')
@@ -412,29 +412,35 @@ class FlujoClinicoTest extends TestCase
     {
         $this->post('/propietarios', $this->propietario());
         foreach (range(1, 14) as $i) {
-            $this->post('/mascotas', $this->mascota(['nombre' => sprintf('Paciente %02d', $i)]));
+            $this->post('/mascotas', $this->mascota(['nombre' => 'Paciente ' . chr(64 + $i)]));
         }
-        $reciente = Mascota::where('nombre', 'Paciente 14')->first();
-        $vieja = Mascota::where('nombre', 'Paciente 13')->first();
+        $reciente = Mascota::where('nombre', 'Paciente N')->first();
+        $vieja = Mascota::where('nombre', 'Paciente M')->first();
         FichaClinica::create(['mascota_id' => $vieja->id, 'fecha_consulta' => '2026-01-01', 'motivo_consulta' => 'X', 'estado' => 'Revisión']);
         FichaClinica::create(['mascota_id' => $reciente->id, 'fecha_consulta' => '2026-10-01', 'motivo_consulta' => 'X', 'estado' => 'En tratamiento']);
         FichaClinica::create(['mascota_id' => $reciente->id, 'fecha_consulta' => '2026-11-01', 'motivo_consulta' => 'X', 'estado' => 'Saludable']);
 
         $this->get('/dashboard')
             ->assertOk()
-            ->assertSeeInOrder(['Paciente 14', 'Saludable', '01/11/2026', 'Paciente 13', 'Revisión', 'Paciente 01', 'Sin consultas'])
-            ->assertDontSee('Paciente 11') // 12 por página: la página 1 llega hasta "Paciente 10"
+            ->assertSeeInOrder(['Paciente N', 'Saludable', '01/11/2026', 'Paciente M', 'Revisión', 'Paciente A', 'Sin consultas'])
+            ->assertDontSee('Paciente K') // 12 por página: la página 1 llega hasta "Paciente J"
             ->assertSee('page=2');
 
-        $this->get('/dashboard?page=2')->assertSee('Paciente 11')->assertSee('Paciente 12');
-        $this->get('/dashboard?buscar=Paciente 13')->assertSee('Paciente 13')->assertDontSee('Paciente 14');
+        $this->get('/dashboard?page=2')->assertSee('Paciente K')->assertSee('Paciente L');
+        $this->get('/dashboard?buscar=Paciente M')->assertSee('Paciente M')->assertDontSee('Paciente N');
     }
 
     public function test_nombres_con_codigo_no_se_ejecutan_en_las_confirmaciones(): void
     {
         $malicioso = "x'); alert(document.cookie); //";
-        $this->post('/propietarios', $this->propietario(['nombre' => $malicioso]));
-        $this->post('/mascotas', $this->mascota(['nombre' => $malicioso]));
+
+        // Hoy el formulario ya no acepta estos caracteres en un nombre...
+        $this->post('/propietarios', $this->propietario(['nombre' => $malicioso]))->assertSessionHasErrors('nombre');
+
+        // ...pero pueden existir datos cargados antes de esa validación: se
+        // insertan directo en la base y el escape tiene que seguir protegiendo.
+        Propietario::create(array_merge($this->propietario(['nombre' => $malicioso]), ['veterinario_id' => null]));
+        Mascota::create(array_merge($this->mascota(['nombre' => $malicioso]), ['peso' => 12.5, 'edad' => 3]));
 
         foreach (['/propietarios', '/mascotas'] as $url) {
             preg_match('/onsubmit="([^"]*)"/', $this->get($url)->getContent(), $m);

@@ -83,7 +83,7 @@
         @yield('content')
     </div>
 
-    <script src="{{ asset('js/solo-numeros.js') }}?v={{ filemtime(public_path('js/solo-numeros.js')) }}" defer></script>
+    <script src="{{ asset('js/restricciones-campos.js') }}?v={{ filemtime(public_path('js/restricciones-campos.js')) }}" defer></script>
     <script src="{{ asset('js/sugerencias-dni.js') }}?v={{ filemtime(public_path('js/sugerencias-dni.js')) }}" defer></script>
 </body>
 </html>

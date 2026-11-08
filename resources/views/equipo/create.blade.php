@@ -32,7 +32,7 @@
                 <div class="col-md-6">
                     <label for="name" class="form-label">Nombre y apellido *</label>
                     <input type="text" class="form-control @error('name') is-invalid @enderror"
-                           id="name" name="name" placeholder="Ingrese el nombre" value="{{ old('name') }}" autofocus>
+                           id="name" name="name" {{ \App\Support\Campos::atributos('name') }} placeholder="Ingrese el nombre" value="{{ old('name') }}" autofocus>
                     @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
@@ -61,7 +61,7 @@
                 <div class="col-md-6" data-solo-rol="veterinario">
                     <label for="catedra" class="form-label">Cátedra</label>
                     <input type="text" class="form-control @error('catedra') is-invalid @enderror"
-                           id="catedra" name="catedra" placeholder="Ej: Clínica de pequeños animales" value="{{ old('catedra') }}">
+                           id="catedra" name="catedra" {{ \App\Support\Campos::atributos('catedra') }} placeholder="Ej: Clínica de pequeños animales" value="{{ old('catedra') }}">
                     @error('catedra') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
             </div>

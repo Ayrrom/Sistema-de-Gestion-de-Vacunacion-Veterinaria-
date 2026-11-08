@@ -11,7 +11,7 @@
             type="text"
             class="form-control @error('nombre') is-invalid @enderror"
             id="nombre"
-            name="nombre"
+            name="nombre" {{ \App\Support\Campos::atributos('nombre_mascota') }}
             placeholder="Nombre del paciente"
             value="{{ old('nombre', $m->nombre ?? '') }}"
         >
@@ -36,7 +36,7 @@
             type="text"
             class="form-control @error('raza') is-invalid @enderror"
             id="raza"
-            name="raza"
+            name="raza" {{ \App\Support\Campos::atributos('raza') }}
             placeholder="Raza del paciente"
             value="{{ old('raza', $m->raza ?? '') }}"
         >
@@ -56,11 +56,10 @@
 
     <div class="col-md-4">
         <label for="peso" class="form-label">Peso (kg) *</label>
-        <input
-            type="number" step="0.01" min="0"
+        <input type="text"
             class="form-control @error('peso') is-invalid @enderror"
             id="peso"
-            name="peso"
+            name="peso" {{ \App\Support\Campos::atributos('peso') }}
             placeholder="Peso en kilogramos"
             value="{{ old('peso', $m->peso ?? '') }}"
         >
@@ -69,11 +68,10 @@
 
     <div class="col-md-4">
         <label for="edad" class="form-label">Edad (años) *</label>
-        <input
-            type="number" min="0"
+        <input type="text"
             class="form-control @error('edad') is-invalid @enderror"
             id="edad"
-            name="edad"
+            name="edad" {{ \App\Support\Campos::atributos('edad') }}
             placeholder="Edad en años"
             value="{{ old('edad', $m->edad ?? '') }}"
         >
@@ -86,7 +84,7 @@
             type="text"
             class="form-control @error('tipo_pelaje') is-invalid @enderror"
             id="tipo_pelaje"
-            name="tipo_pelaje"
+            name="tipo_pelaje" {{ \App\Support\Campos::atributos('tipo_pelaje') }}
             placeholder="Ej: Corto, Largo"
             value="{{ old('tipo_pelaje', $m->tipo_pelaje ?? '') }}"
         >
@@ -96,7 +94,7 @@
     <div class="col-md-6">
         <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
         <input
-            type="date"
+            type="date" max="{{ now()->format('Y-m-d') }}"
             class="form-control @error('fecha_nacimiento') is-invalid @enderror"
             id="fecha_nacimiento"
             name="fecha_nacimiento"
@@ -111,7 +109,7 @@
             type="text"
             class="form-control @error('color') is-invalid @enderror"
             id="color"
-            name="color"
+            name="color" {{ \App\Support\Campos::atributos('color') }}
             placeholder="Color del pelaje"
             value="{{ old('color', $m->color ?? '') }}"
         >
@@ -124,7 +122,7 @@
             type="text"
             class="form-control @error('procedencia') is-invalid @enderror"
             id="procedencia"
-            name="procedencia"
+            name="procedencia" {{ \App\Support\Campos::atributos('procedencia') }}
             placeholder="Ej: Adopción, Compra, Vía pública"
             value="{{ old('procedencia', $m->procedencia ?? '') }}"
         >
@@ -150,7 +148,7 @@
         <textarea
             class="form-control @error('senas_particulares') is-invalid @enderror"
             id="senas_particulares"
-            name="senas_particulares"
+            name="senas_particulares" {{ \App\Support\Campos::atributos('senas_particulares') }}
             rows="2"
             placeholder="Marcas, cicatrices u otras características"
         >{{ old('senas_particulares', $m->senas_particulares ?? '') }}</textarea>

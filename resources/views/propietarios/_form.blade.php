@@ -30,7 +30,7 @@
             type="text"
             class="form-control @error('telefono') is-invalid @enderror"
             id="telefono"
-            name="telefono"
+            name="telefono" {{ \App\Support\Campos::atributos('telefono') }}
             placeholder="Ingrese teléfono"
             value="{{ old('telefono', $p->telefono ?? '') }}"
         >
@@ -45,7 +45,7 @@
             type="text"
             class="form-control @error('nombre') is-invalid @enderror"
             id="nombre"
-            name="nombre"
+            name="nombre" {{ \App\Support\Campos::atributos('nombre_propietario') }}
             placeholder="Ingrese nombre"
             value="{{ old('nombre', $p->nombre ?? '') }}"
         >
@@ -60,7 +60,7 @@
             type="text"
             class="form-control @error('apellido') is-invalid @enderror"
             id="apellido"
-            name="apellido"
+            name="apellido" {{ \App\Support\Campos::atributos('apellido') }}
             placeholder="Ingrese apellido"
             value="{{ old('apellido', $p->apellido ?? '') }}"
         >
@@ -75,7 +75,7 @@
             type="text"
             class="form-control @error('calle') is-invalid @enderror"
             id="calle"
-            name="calle"
+            name="calle" {{ \App\Support\Campos::atributos('calle') }}
             placeholder="Ingrese calle"
             value="{{ old('calle', $p->calle ?? '') }}"
         >
@@ -90,7 +90,7 @@
             type="text"
             class="form-control @error('altura') is-invalid @enderror"
             id="altura"
-            name="altura"
+            name="altura" {{ \App\Support\Campos::atributos('altura') }}
             placeholder="N°"
             value="{{ old('altura', $p->altura ?? '') }}"
         >
@@ -105,7 +105,7 @@
             type="text"
             class="form-control @error('localidad') is-invalid @enderror"
             id="localidad"
-            name="localidad"
+            name="localidad" {{ \App\Support\Campos::atributos('localidad') }}
             placeholder="Ingrese localidad"
             value="{{ old('localidad', $p->localidad ?? '') }}"
         >

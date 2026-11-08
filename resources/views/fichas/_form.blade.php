@@ -23,7 +23,7 @@
         <div class="col-md-6">
             <label for="fecha_consulta" class="form-label">Fecha *</label>
             <input
-                type="date"
+                type="date" max="{{ now()->format('Y-m-d') }}"
                 class="form-control @error('fecha_consulta') is-invalid @enderror"
                 id="fecha_consulta"
                 name="fecha_consulta"
@@ -86,7 +86,7 @@
         </div>
         <div class="col-md-6">
             <label for="vacunas_aplicadas" class="form-label">Detalles</label>
-            <input type="text" class="form-control" id="vacunas_aplicadas" name="vacunas_aplicadas" placeholder="Detalles de vacunas" value="{{ old('vacunas_aplicadas', $f->vacunas_aplicadas ?? '') }}">
+            <input type="text" class="form-control" id="vacunas_aplicadas" name="vacunas_aplicadas" {{ \App\Support\Campos::atributos('vacunas_aplicadas') }} placeholder="Detalles de vacunas" value="{{ old('vacunas_aplicadas', $f->vacunas_aplicadas ?? '') }}">
         </div>
     </div>
 </div>
@@ -96,15 +96,15 @@
     <div class="row g-3">
         <div class="col-md-4">
             <label for="fecha_desparasitacion" class="form-label">Última desparasitación</label>
-            <input type="date" class="form-control" id="fecha_desparasitacion" name="fecha_desparasitacion" value="{{ old('fecha_desparasitacion', optional($f?->fecha_desparasitacion)->format('Y-m-d')) }}">
+            <input type="date" max="{{ now()->format('Y-m-d') }}" class="form-control" id="fecha_desparasitacion" name="fecha_desparasitacion" value="{{ old('fecha_desparasitacion', optional($f?->fecha_desparasitacion)->format('Y-m-d')) }}">
         </div>
         <div class="col-md-4">
             <label for="droga_desparasitacion" class="form-label">Droga</label>
-            <input type="text" class="form-control" id="droga_desparasitacion" name="droga_desparasitacion" placeholder="Nombre de la droga" value="{{ old('droga_desparasitacion', $f->droga_desparasitacion ?? '') }}">
+            <input type="text" class="form-control" id="droga_desparasitacion" name="droga_desparasitacion" {{ \App\Support\Campos::atributos('droga_desparasitacion') }} placeholder="Nombre de la droga" value="{{ old('droga_desparasitacion', $f->droga_desparasitacion ?? '') }}">
         </div>
         <div class="col-md-4">
             <label for="producto_desparasitacion" class="form-label">Producto</label>
-            <input type="text" class="form-control" id="producto_desparasitacion" name="producto_desparasitacion" placeholder="Nombre del producto" value="{{ old('producto_desparasitacion', $f->producto_desparasitacion ?? '') }}">
+            <input type="text" class="form-control" id="producto_desparasitacion" name="producto_desparasitacion" {{ \App\Support\Campos::atributos('producto_desparasitacion') }} placeholder="Nombre del producto" value="{{ old('producto_desparasitacion', $f->producto_desparasitacion ?? '') }}">
         </div>
     </div>
 </div>
@@ -114,7 +114,7 @@
     <div class="row g-3">
         <div class="col-md-8">
             <label for="motivo_consulta" class="form-label">Motivo de la consulta *</label>
-            <textarea class="form-control @error('motivo_consulta') is-invalid @enderror" id="motivo_consulta" name="motivo_consulta" rows="2" placeholder="Describa el motivo de la consulta">{{ old('motivo_consulta', $f->motivo_consulta ?? '') }}</textarea>
+            <textarea class="form-control @error('motivo_consulta') is-invalid @enderror" id="motivo_consulta" name="motivo_consulta" {{ \App\Support\Campos::atributos('motivo_consulta') }} rows="2" placeholder="Describa el motivo de la consulta">{{ old('motivo_consulta', $f->motivo_consulta ?? '') }}</textarea>
             @error('motivo_consulta') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
         <div class="col-md-4">
@@ -136,29 +136,29 @@
     <div class="row g-3 mb-3">
         <div class="col-md-4">
             <label for="fc" class="form-label">FC</label>
-            <input type="number" class="form-control" id="fc" name="fc" placeholder="FC" value="{{ old('fc', $f->fc ?? '') }}">
+            <input type="text" class="form-control" id="fc" name="fc" {{ \App\Support\Campos::atributos('fc') }} placeholder="FC" value="{{ old('fc', $f->fc ?? '') }}">
         </div>
         <div class="col-md-4">
             <label for="temperatura" class="form-label">Temperatura (°C)</label>
-            <input type="number" step="0.1" class="form-control" id="temperatura" name="temperatura" placeholder="Temperatura" value="{{ old('temperatura', $f->temperatura ?? '') }}">
+            <input type="text" class="form-control" id="temperatura" name="temperatura" {{ \App\Support\Campos::atributos('temperatura') }} placeholder="Temperatura" value="{{ old('temperatura', $f->temperatura ?? '') }}">
         </div>
         <div class="col-md-4">
             <label for="tllc" class="form-label">TLLC</label>
-            <input type="text" class="form-control" id="tllc" name="tllc" placeholder="TLLC" value="{{ old('tllc', $f->tllc ?? '') }}">
+            <input type="text" class="form-control" id="tllc" name="tllc" {{ \App\Support\Campos::atributos('tllc') }} placeholder="TLLC" value="{{ old('tllc', $f->tllc ?? '') }}">
         </div>
     </div>
     <div class="row g-3">
         <div class="col-md-4">
             <label for="fr" class="form-label">FR</label>
-            <input type="number" class="form-control" id="fr" name="fr" placeholder="FR" value="{{ old('fr', $f->fr ?? '') }}">
+            <input type="text" class="form-control" id="fr" name="fr" {{ \App\Support\Campos::atributos('fr') }} placeholder="FR" value="{{ old('fr', $f->fr ?? '') }}">
         </div>
         <div class="col-md-4">
             <label for="pulso" class="form-label">Pulso</label>
-            <input type="text" class="form-control" id="pulso" name="pulso" placeholder="Pulso" value="{{ old('pulso', $f->pulso ?? '') }}">
+            <input type="text" class="form-control" id="pulso" name="pulso" {{ \App\Support\Campos::atributos('pulso') }} placeholder="Pulso" value="{{ old('pulso', $f->pulso ?? '') }}">
         </div>
         <div class="col-md-4">
             <label for="relacion_entorno" class="form-label">Relación al entorno</label>
-            <input type="text" class="form-control" id="relacion_entorno" name="relacion_entorno" placeholder="Relación al entorno" value="{{ old('relacion_entorno', $f->relacion_entorno ?? '') }}">
+            <input type="text" class="form-control" id="relacion_entorno" name="relacion_entorno" {{ \App\Support\Campos::atributos('relacion_entorno') }} placeholder="Relación al entorno" value="{{ old('relacion_entorno', $f->relacion_entorno ?? '') }}">
         </div>
     </div>
 </div>

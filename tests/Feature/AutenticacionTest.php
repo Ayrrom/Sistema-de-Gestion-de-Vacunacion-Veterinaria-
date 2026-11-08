@@ -153,7 +153,7 @@ class AutenticacionTest extends TestCase
         $this->get('/login')
             ->assertSee('data-solo-numeros', false)
             ->assertSee('inputmode="numeric"', false)
-            ->assertSee('js/solo-numeros.js');
+            ->assertSee('js/restricciones-campos.js');
 
         foreach (['4011122a', 'abc', '40.111.2', '40 11122'] as $dni) {
             $this->post('/login', ['dni' => $dni, 'password' => 'x'])
