@@ -13,9 +13,35 @@
         </a>
     </div>
 
+    <div class="mb-3" style="max-width: 480px;">
+        <form method="GET" action="{{ route('propietarios.index') }}">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input
+                    type="search"
+                    name="buscar"
+                    class="form-control"
+                    placeholder="Buscar por DNI, nombre o apellido..."
+                    value="{{ $busqueda }}"
+                    autofocus
+                >
+                <button type="submit" class="btn btn-guardar">Buscar</button>
+            </div>
+            <div class="form-text">Con el DNI completo se abre directamente el perfil del propietario.</div>
+        </form>
+    </div>
+
     <div class="page-card">
         @if ($propietarios->isEmpty())
-            <p class="text-muted mb-0">Todavía no hay propietarios registrados.</p>
+            @if ($busqueda !== '')
+                <p class="text-muted mb-2">No se encontró ningún propietario para "{{ $busqueda }}".</p>
+                <a href="{{ route('propietarios.create') }}" class="btn btn-sm btn-guardar">
+                    <i class="bi bi-plus-lg"></i> Registrar nuevo propietario
+                </a>
+                <a href="{{ route('propietarios.index') }}" class="btn btn-sm btn-cancelar">Ver todos</a>
+            @else
+                <p class="text-muted mb-0">Todavía no hay propietarios registrados.</p>
+            @endif
         @else
             <div class="table-responsive">
                 <table class="table">
@@ -27,6 +53,7 @@
                             <th>Localidad</th>
                             <th>Teléfono</th>
                             <th>Veterinario</th>
+                            <th>Mascotas</th>
                             <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
@@ -34,13 +61,17 @@
                         @foreach ($propietarios as $propietario)
                             <tr>
                                 <td>{{ $propietario->dni }}</td>
-                                <td>{{ $propietario->nombre }}</td>
-                                <td>{{ $propietario->apellido }}</td>
+                                <td><a href="{{ route('propietarios.show', $propietario) }}">{{ $propietario->nombre }}</a></td>
+                                <td><a href="{{ route('propietarios.show', $propietario) }}">{{ $propietario->apellido }}</a></td>
                                 <td>{{ $propietario->localidad }}</td>
                                 <td>{{ $propietario->telefono }}</td>
                                 <td>{{ $propietario->veterinario->nombre ?? '—' }}</td>
+                                <td>{{ $propietario->mascotas_count }}</td>
                                 <td class="text-end">
-                                    <a href="{{ route('propietarios.edit', $propietario) }}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ route('propietarios.show', $propietario) }}" class="btn btn-sm btn-outline-secondary" title="Ver perfil">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ route('propietarios.edit', $propietario) }}" class="btn btn-sm btn-outline-primary" title="Editar">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     @if (Auth::user()->puedeEliminar())

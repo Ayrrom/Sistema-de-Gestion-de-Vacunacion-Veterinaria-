@@ -80,6 +80,51 @@ class FlujoClinicoTest extends TestCase
         $this->get('/propietarios')->assertSee('Dra. Perez');
     }
 
+    public function test_buscar_por_dni_completo_abre_el_perfil_del_propietario(): void
+    {
+        $this->post('/propietarios', $this->propietario());
+
+        $this->get('/propietarios?buscar=30111222')->assertRedirect(route('propietarios.show', '30111222'));
+        $this->get('/propietarios?buscar=%2030111222%20')->assertRedirect(route('propietarios.show', '30111222')); // con espacios
+    }
+
+    public function test_buscar_propietarios_por_dni_parcial_nombre_o_apellido(): void
+    {
+        $this->post('/propietarios', $this->propietario());
+        $this->post('/propietarios', $this->propietario(['dni' => '25999888', 'nombre' => 'Carlos', 'apellido' => 'Lopez']));
+
+        $this->get('/propietarios?buscar=3011')->assertOk()->assertSee('Gomez')->assertDontSee('Lopez');
+        $this->get('/propietarios?buscar=carlos')->assertOk()->assertSee('Lopez')->assertDontSee('Gomez');
+        $this->get('/propietarios?buscar=Gom')->assertOk()->assertSee('Gomez')->assertDontSee('Lopez');
+        $this->get('/propietarios?buscar=nadie')->assertOk()
+            ->assertSee('No se encontró ningún propietario para')
+            ->assertSee('Registrar nuevo propietario');
+        $this->get('/propietarios')->assertSee('Gomez')->assertSee('Lopez');
+    }
+
+    public function test_perfil_del_propietario_muestra_sus_mascotas(): void
+    {
+        $firulais = $this->crearPaciente();
+        $this->crearPaciente(['nombre' => 'Michi', 'especie' => 'Gato']);
+        FichaClinica::create(['mascota_id' => $firulais->id, 'fecha_consulta' => '2026-11-01', 'motivo_consulta' => 'X', 'estado' => 'En tratamiento']);
+        $this->post('/propietarios', $this->propietario(['dni' => '25999888', 'nombre' => 'Carlos', 'apellido' => 'Lopez']));
+        $this->post('/mascotas', $this->mascota(['propietario_dni' => '25999888', 'nombre' => 'Rocky']));
+
+        $this->get('/propietarios/30111222')
+            ->assertOk()
+            ->assertSee('Ana Gomez')
+            ->assertSee('Mascotas (2)')
+            ->assertSee('Firulais')->assertSee('Michi')
+            ->assertDontSee('Rocky') // es de otro propietario
+            ->assertSee('En tratamiento')
+            ->assertSee('01/11/2026')
+            ->assertSee(route('fichas.create', $firulais))
+            ->assertSee(route('mascotas.create', ['dni' => '30111222']), false);
+
+        $this->get("/mascotas/{$firulais->id}")->assertSee(route('propietarios.show', '30111222'));
+        $this->get('/propietarios/99999999')->assertNotFound();
+    }
+
     public function test_validaciones_de_propietario_y_paciente(): void
     {
         $this->post('/propietarios', [])->assertSessionHasErrors(['dni', 'nombre', 'apellido', 'localidad', 'telefono', 'calle', 'altura']);

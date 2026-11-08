@@ -11,13 +11,45 @@ use Illuminate\Database\QueryException;
 class PropietarioController extends Controller
 {
     /**
-     * Listado de propietarios.
+     * Listado de propietarios, con búsqueda por DNI, nombre o apellido.
+     * Si lo buscado es exactamente el DNI de un propietario, se va directo
+     * a su perfil.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $propietarios = Propietario::with('veterinario')->orderBy('apellido')->orderBy('nombre')->paginate(15);
+        $busqueda = trim((string) $request->query('buscar', ''));
 
-        return view('propietarios.index', compact('propietarios'));
+        if ($busqueda !== '' && ($propietario = Propietario::find($busqueda))) {
+            return redirect()->route('propietarios.show', $propietario);
+        }
+
+        $propietarios = Propietario::with('veterinario')
+            ->withCount('mascotas')
+            ->when($busqueda !== '', function ($query) use ($busqueda) {
+                $query->where(function ($q) use ($busqueda) {
+                    $q->where('dni', 'like', "%{$busqueda}%")
+                        ->orWhere('nombre', 'like', "%{$busqueda}%")
+                        ->orWhere('apellido', 'like', "%{$busqueda}%");
+                });
+            })
+            ->orderBy('apellido')
+            ->orderBy('nombre')
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('propietarios.index', compact('propietarios', 'busqueda'));
+    }
+
+    /**
+     * Perfil del propietario con sus mascotas.
+     */
+    public function show(Propietario $propietario)
+    {
+        $propietario->load(['veterinario', 'mascotas' => function ($query) {
+            $query->with('ultimaFicha')->orderBy('nombre');
+        }]);
+
+        return view('propietarios.show', compact('propietario'));
     }
 
     /**

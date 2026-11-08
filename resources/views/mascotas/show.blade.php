@@ -44,6 +44,7 @@
                     <div class="col-md-6 dato-valor"><div class="dato-label">Teléfono</div>{{ $mascota->propietario->telefono }}</div>
                     <div class="col-md-6 dato-valor"><div class="dato-label">Localidad</div>{{ $mascota->propietario->localidad }}</div>
                 </div>
+                <a href="{{ route('propietarios.show', $mascota->propietario) }}" class="btn btn-cancelar">Ver perfil del propietario</a>
             </div>
         </div>
 

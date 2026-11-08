@@ -41,7 +41,7 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('propietarios', PropietarioController::class)->except(['show', 'destroy']);
+    Route::resource('propietarios', PropietarioController::class)->except(['destroy']);
 
     Route::get('/mascotas', [MascotaController::class, 'index'])->name('mascotas.index');
     Route::get('/mascotas/create', [MascotaController::class, 'create'])->name('mascotas.create');
