@@ -23,7 +23,7 @@ class UsuarioActivo
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->withErrors(['dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario o un administrador.']);
+                ->withErrors(['dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario.']);
         }
 
         return $next($request);

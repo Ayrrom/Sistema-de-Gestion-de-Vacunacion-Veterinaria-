@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <div>
             <div class="page-title">Equipo</div>
-            <div class="page-subtitle mb-0">Alta y baja de estudiantes y veterinarios</div>
+            <div class="page-subtitle mb-0">Alta, baja y contraseñas de estudiantes y veterinarios</div>
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('equipo.create', ['rol' => 'estudiante']) }}" class="btn btn-guardar">
@@ -47,6 +47,7 @@
                                 @if ($rol === 'veterinario')
                                     <th>Estudiantes a cargo</th>
                                 @endif
+                                <th>Contraseña</th>
                                 <th>Estado</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
@@ -68,14 +69,29 @@
                                         <td>{{ $miembro->veterinario?->estudiantes->count() ?? 0 }}</td>
                                     @endif
                                     <td>
+                                        @if ($miembro->debe_cambiar_password)
+                                            <span class="badge text-bg-warning">Inicial (DNI)</span>
+                                        @else
+                                            <span class="badge text-bg-light border">Personalizada</span>
+                                        @endif
+                                    </td>
+                                    <td>
                                         @if ($miembro->activo)
                                             <span class="badge text-bg-success"><i class="bi bi-check-circle"></i> Activo</span>
                                         @else
                                             <span class="badge text-bg-secondary"><i class="bi bi-slash-circle"></i> Dado de baja</span>
                                         @endif
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-nowrap">
                                         @if ($miembro->id !== Auth::id())
+                                            <form method="POST" action="{{ route('equipo.restablecer-password', $miembro) }}" class="d-inline"
+                                                  onsubmit="return confirm({{ Js::from('¿Restablecer la contraseña de ' . $miembro->name . ' a su DNI?') }});">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary" title="Restablecer contraseña al DNI">
+                                                    <i class="bi bi-arrow-counterclockwise"></i> Restablecer contraseña
+                                                </button>
+                                            </form>
                                             @if ($miembro->activo)
                                                 <form method="POST" action="{{ route('equipo.baja', $miembro) }}" class="d-inline"
                                                       onsubmit="return confirm({{ Js::from('¿Dar de baja a ' . $miembro->name . '? No va a poder ingresar al sistema, pero su historial se conserva.') }});">

@@ -46,7 +46,7 @@ class EquipoTest extends TestCase
         $this->get('/dashboard')->assertDontSee(route('equipo.index'));
         $this->get('/equipo')->assertForbidden();
 
-        foreach (['admin', 'estudiante'] as $rol) {
+        foreach (['estudiante'] as $rol) {
             $this->actingAs(User::factory()->create(['rol' => $rol]))->get('/equipo')->assertForbidden();
         }
     }
@@ -81,7 +81,7 @@ class EquipoTest extends TestCase
         $this->assertSame('Cirugía', $nuevo->veterinario->catedra);
     }
 
-    public function test_el_veterinario_no_puede_crear_administradores_ni_dni_invalidos(): void
+    public function test_no_se_pueden_crear_administradores_ni_dni_invalidos(): void
     {
         $this->actingAs($this->vet);
 
@@ -118,7 +118,7 @@ class EquipoTest extends TestCase
         // No puede iniciar sesión.
         auth()->logout();
         $this->post('/login', ['dni' => '40111222', 'password' => 'ClaveJuan1'])
-            ->assertSessionHasErrors(['dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario o un administrador.']);
+            ->assertSessionHasErrors(['dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario.']);
         $this->assertGuest();
     }
 
@@ -163,17 +163,19 @@ class EquipoTest extends TestCase
     {
         $this->actingAs($this->vet)->put("/equipo/{$this->vet->id}/baja")->assertForbidden();
         $this->assertTrue($this->vet->fresh()->activo);
-
-        $admin = User::factory()->create(['rol' => 'admin']);
-        $this->actingAs($admin)->put("/equipo/{$admin->id}/baja")->assertForbidden();
+        $this->get('/equipo')->assertSee('Vos');
     }
 
-    public function test_el_veterinario_no_puede_dar_de_baja_a_un_administrador(): void
+    public function test_un_veterinario_da_de_baja_y_de_alta_a_otro_veterinario(): void
     {
-        $admin = User::factory()->create(['rol' => 'admin']);
+        $otro = User::factory()->create(['rol' => 'veterinario', 'name' => 'Dr. Gomez']);
 
-        $this->actingAs($this->vet)->put("/equipo/{$admin->id}/baja")->assertForbidden();
-        $this->assertTrue($admin->fresh()->activo);
+        $this->actingAs($this->vet)->put("/equipo/{$otro->id}/baja")->assertRedirect();
+        $this->assertFalse($otro->fresh()->activo);
+        $this->get('/equipo')->assertSee('Dado de baja');
+
+        $this->put("/equipo/{$otro->id}/alta")->assertRedirect();
+        $this->assertTrue($otro->fresh()->activo);
     }
 
     public function test_el_estudiante_no_puede_dar_de_baja_a_nadie(): void
@@ -182,19 +184,7 @@ class EquipoTest extends TestCase
         $juan->update(['debe_cambiar_password' => false]);
 
         $this->actingAs($juan)->put("/equipo/{$this->vet->id}/baja")->assertForbidden();
+        $this->put("/equipo/{$this->vet->id}/restablecer-password")->assertForbidden();
         $this->post('/equipo', ['rol' => 'estudiante', 'name' => 'X', 'dni' => '9'])->assertForbidden();
-    }
-
-    public function test_el_admin_da_de_baja_y_de_alta_desde_usuarios(): void
-    {
-        $admin = User::factory()->create(['rol' => 'admin']);
-        $otroAdmin = User::factory()->create(['rol' => 'admin', 'name' => 'Otro Admin']);
-
-        $this->actingAs($admin)->get('/usuarios')->assertSee('Dar de baja')->assertSee('Activo');
-        $this->put("/equipo/{$otroAdmin->id}/baja")->assertRedirect();
-        $this->assertFalse($otroAdmin->fresh()->activo);
-        $this->get('/usuarios')->assertSee('Dado de baja');
-        $this->put("/equipo/{$otroAdmin->id}/alta");
-        $this->assertTrue($otroAdmin->fresh()->activo);
     }
 }

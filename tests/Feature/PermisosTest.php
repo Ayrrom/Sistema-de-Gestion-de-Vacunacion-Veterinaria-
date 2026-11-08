@@ -9,11 +9,13 @@ use App\Models\Propietario;
 use App\Models\User;
 use App\Models\Veterinario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 /**
- * Roles: admin (todo), veterinario (todo menos usuarios), estudiante (no elimina).
+ * Roles: veterinario (administra todo) y estudiante (ve, carga y edita, no elimina).
+ * No existe el rol administrador.
  */
 class PermisosTest extends TestCase
 {
@@ -36,16 +38,27 @@ class PermisosTest extends TestCase
         return User::factory()->create(['rol' => $rol]);
     }
 
-    public function test_solo_el_admin_gestiona_usuarios(): void
+    public function test_solo_existen_los_roles_veterinario_y_estudiante(): void
     {
-        $this->actingAs($this->usuario('admin'))->get('/usuarios')->assertOk();
+        $this->assertSame(['veterinario', 'estudiante'], array_keys(User::ROLES));
+    }
 
-        foreach (['veterinario', 'estudiante'] as $rol) {
-            $this->actingAs($this->usuario($rol));
-            $this->get('/usuarios')->assertForbidden();
-            $this->get('/usuarios/create')->assertForbidden();
-            $this->post('/usuarios', ['name' => 'X', 'dni' => '5', 'rol' => 'admin'])->assertForbidden();
-        }
+    public function test_la_pantalla_usuarios_ya_no_existe(): void
+    {
+        $this->actingAs($this->usuario('veterinario'));
+
+        $this->get('/usuarios')->assertNotFound();
+        $this->get('/dashboard')->assertDontSee('bi-people-fill');
+    }
+
+    public function test_el_estudiante_no_puede_administrar(): void
+    {
+        $this->actingAs($this->usuario('estudiante'));
+
+        $this->get('/equipo')->assertForbidden();
+        $this->get('/equipo/create')->assertForbidden();
+        $this->post('/equipo', ['name' => 'X', 'dni' => '5', 'rol' => 'veterinario'])->assertForbidden();
+        $this->get('/estadisticas')->assertForbidden();
     }
 
     public function test_el_estudiante_no_puede_eliminar(): void
@@ -93,51 +106,82 @@ class PermisosTest extends TestCase
         $this->assertDatabaseCount('fichas_clinicas', 0);
     }
 
-    public function test_el_admin_crea_veterinario_y_estudiante_a_cargo(): void
+    public function test_el_veterinario_crea_veterinario_y_estudiante_a_cargo(): void
     {
-        $this->actingAs($this->usuario('admin'));
+        $this->actingAs($creador = $this->usuario('veterinario'));
 
-        $this->post('/usuarios', ['name' => 'Dra. Perez', 'dni' => '20111222', 'rol' => 'veterinario', 'catedra' => 'Clínica'])
-            ->assertRedirect(route('usuarios.index'));
+        $this->post('/equipo', ['name' => 'Dra. Perez', 'dni' => '20111222', 'rol' => 'veterinario', 'catedra' => 'Clínica'])
+            ->assertRedirect(route('equipo.index'));
         $vet = Veterinario::firstOrFail();
         $this->assertSame('veterinario', $vet->user->rol);
         $this->assertSame('Clínica', $vet->catedra);
 
-        $this->post('/usuarios', ['name' => 'Juan', 'dni' => '40111222', 'rol' => 'estudiante', 'veterinario_id' => $vet->id])
-            ->assertRedirect(route('usuarios.index'));
+        $this->post('/equipo', ['name' => 'Juan', 'dni' => '40111222', 'rol' => 'estudiante', 'veterinario_id' => $vet->id])
+            ->assertRedirect(route('equipo.index'));
         $est = Estudiante::firstOrFail();
         $this->assertSame($vet->id, $est->veterinario_id);
         $this->assertTrue($est->user->debe_cambiar_password);
         $this->assertTrue(Hash::check('40111222', $est->user->password));
 
-        // El admin sigue logueado como él mismo (antes se cambiaba al usuario creado).
-        $this->assertTrue(auth()->user()->esAdmin());
+        // Sigue logueado como él mismo.
+        $this->assertSame($creador->id, auth()->id());
     }
 
-    public function test_alta_de_usuario_rechaza_rol_invalido_y_dni_repetido(): void
+    public function test_alta_rechaza_rol_invalido_y_dni_invalido_o_repetido(): void
     {
-        $this->actingAs($admin = $this->usuario('admin'));
+        $this->actingAs($vet = $this->usuario('veterinario'));
 
-        $this->post('/usuarios', ['name' => 'X', 'dni' => '9', 'rol' => 'superadmin'])->assertSessionHasErrors('rol');
-        $this->post('/usuarios', ['name' => 'X', 'dni' => $admin->dni, 'rol' => 'estudiante'])->assertSessionHasErrors('dni');
-        $this->post('/usuarios', ['name' => 'X', 'dni' => '123456789', 'rol' => 'estudiante'])
+        foreach (['admin', 'superadmin'] as $rol) {
+            $this->post('/equipo', ['name' => 'X', 'dni' => '9', 'rol' => $rol])->assertSessionHasErrors('rol');
+        }
+        $this->post('/equipo', ['name' => 'X', 'dni' => $vet->dni, 'rol' => 'estudiante'])->assertSessionHasErrors('dni');
+        $this->post('/equipo', ['name' => 'X', 'dni' => '123456789', 'rol' => 'estudiante'])
             ->assertSessionHasErrors(['dni' => 'El DNI puede tener como máximo 8 caracteres.']);
-        $this->get('/usuarios/create')->assertSee('maxlength="8"', false)->assertSee('data-solo-numeros', false);
-        $this->post('/usuarios', ['name' => 'X', 'dni' => '4011abc', 'rol' => 'estudiante'])
+        $this->post('/equipo', ['name' => 'X', 'dni' => '4011abc', 'rol' => 'estudiante'])
             ->assertSessionHasErrors(['dni' => 'El DNI solo puede tener números.']);
+        $this->get('/equipo/create')->assertSee('maxlength="8"', false)->assertSee('data-solo-numeros', false);
 
         $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_el_admin_restablece_la_contrasena_al_dni(): void
+    public function test_el_veterinario_restablece_la_contrasena_al_dni(): void
     {
-        $this->actingAs($this->usuario('admin'));
-        $otro = User::factory()->create(['dni' => '555', 'password' => 'Personal123', 'debe_cambiar_password' => false]);
+        $this->actingAs($vet = $this->usuario('veterinario'));
+        $otro = User::factory()->create(['rol' => 'estudiante', 'dni' => '555', 'password' => 'Personal123', 'debe_cambiar_password' => false]);
 
-        $this->put("/usuarios/{$otro->id}/restablecer-password")->assertRedirect();
+        $this->get('/equipo')->assertSee('Restablecer contraseña');
+        $this->put("/equipo/{$otro->id}/restablecer-password")->assertRedirect();
 
         $otro->refresh();
         $this->assertTrue(Hash::check('555', $otro->password));
         $this->assertTrue($otro->debe_cambiar_password);
+
+        // A sí mismo no (para eso está "Cambiar contraseña").
+        $this->put("/equipo/{$vet->id}/restablecer-password")->assertForbidden();
+    }
+
+    public function test_la_migracion_convierte_los_administradores_en_veterinarios(): void
+    {
+        // Simula la base de producción antes del cambio: dos usuarios admin.
+        DB::table('users')->insert([
+            ['name' => 'Ayrton', 'dni' => '11111111', 'rol' => 'admin', 'activo' => true, 'password' => 'x', 'debe_cambiar_password' => false, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Jorge', 'dni' => '22222222', 'rol' => 'admin', 'activo' => true, 'password' => 'x', 'debe_cambiar_password' => false, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+        // Jorge ya estaba cargado como veterinario (sin usuario) con su DNI.
+        Veterinario::create(['dni' => '22222222', 'nombre' => 'Jorge M.', 'catedra' => 'Clínica']);
+
+        $migracion = require database_path('migrations/2026_11_09_000002_convertir_administradores_en_veterinarios.php');
+        $migracion->up();
+
+        $this->assertSame(0, User::where('rol', 'admin')->count());
+        $ayrton = User::where('dni', '11111111')->first();
+        $jorge = User::where('dni', '22222222')->first();
+        $this->assertSame('veterinario', $ayrton->rol);
+        $this->assertSame('Ayrton', $ayrton->veterinario->nombre);       // perfil nuevo
+        $this->assertSame('Clínica', $jorge->veterinario->catedra);      // perfil existente vinculado
+        $this->assertSame(2, Veterinario::count());                      // no duplicó a Jorge
+
+        $migracion->up(); // correrla dos veces no duplica nada
+        $this->assertSame(2, Veterinario::count());
     }
 }

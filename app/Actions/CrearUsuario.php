@@ -8,8 +8,8 @@ use App\Models\Veterinario;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Da de alta a una persona en el sistema. La usan "Usuarios" (admin) y
- * "Equipo" (veterinario), así el alta es igual en los dos lugares.
+ * Da de alta a una persona en el sistema. La usan "Equipo" (veterinario) y
+ * el seeder del veterinario inicial, así el alta es igual en los dos lugares.
  *
  * - Contraseña inicial = DNI, con cambio obligatorio en el primer ingreso.
  * - Si es veterinario o estudiante, crea también su registro del DER

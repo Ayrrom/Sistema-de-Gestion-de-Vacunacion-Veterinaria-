@@ -97,7 +97,7 @@ class VistaEstudianteYEstadisticasTest extends TestCase
 
     public function test_solo_el_veterinario_puede_cambiar_de_vista(): void
     {
-        foreach (['admin', 'estudiante'] as $rol) {
+        foreach (['estudiante'] as $rol) {
             $user = User::factory()->create(['rol' => $rol]);
             $this->actingAs($user)->post('/perfil/vista')->assertForbidden();
             $this->get('/perfil')->assertOk()->assertDontSee('Ver como Estudiante');
@@ -110,7 +110,7 @@ class VistaEstudianteYEstadisticasTest extends TestCase
     {
         $this->actingAs($this->vet)->get('/dashboard')->assertSee(route('estadisticas.index'));
 
-        foreach (['admin', 'estudiante'] as $rol) {
+        foreach (['estudiante'] as $rol) {
             $user = User::factory()->create(['rol' => $rol]);
             $this->actingAs($user)->get('/estadisticas')->assertForbidden();
             $this->get('/dashboard')->assertDontSee(route('estadisticas.index'));

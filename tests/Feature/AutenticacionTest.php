@@ -16,7 +16,7 @@ class AutenticacionTest extends TestCase
 
     private function usuarioNuevo(array $datos = []): User
     {
-        // Como se crea desde /usuarios: contraseña = DNI y obligado a cambiarla.
+        // Como se crea desde Equipo: contraseña = DNI y obligado a cambiarla.
         return User::factory()->create(array_merge([
             'dni' => '40111222',
             'password' => '40111222',
@@ -79,7 +79,7 @@ class AutenticacionTest extends TestCase
     public function test_no_existe_registro_publico(): void
     {
         $this->get('/register')->assertNotFound();
-        $this->post('/usuarios', ['name' => 'X', 'dni' => '1', 'rol' => 'admin'])->assertRedirect(route('login'));
+        $this->post('/equipo', ['name' => 'X', 'dni' => '1', 'rol' => 'veterinario'])->assertRedirect(route('login'));
 
         $this->assertDatabaseCount('users', 0);
     }
@@ -88,7 +88,7 @@ class AutenticacionTest extends TestCase
     {
         $this->actingAs($this->usuarioNuevo());
 
-        foreach (['/dashboard', '/mascotas', '/propietarios', '/usuarios'] as $url) {
+        foreach (['/dashboard', '/mascotas', '/propietarios', '/equipo', '/estadisticas'] as $url) {
             $this->get($url)->assertRedirect(route('password.edit'));
         }
 
@@ -176,15 +176,17 @@ class AutenticacionTest extends TestCase
             ->assertRedirect(route('dashboard'));
     }
 
-    public function test_el_seeder_crea_el_admin_inicial_una_sola_vez(): void
+    public function test_el_seeder_crea_el_veterinario_inicial_una_sola_vez(): void
     {
         $this->seed();
         $this->seed();
 
         $this->assertDatabaseCount('users', 1);
-        $admin = User::first();
-        $this->assertSame('00000000', $admin->dni);
-        $this->assertTrue($admin->esAdmin());
-        $this->assertTrue($admin->debe_cambiar_password);
+        $vet = User::first();
+        $this->assertSame('00000000', $vet->dni);
+        $this->assertSame('veterinario', $vet->rol);
+        $this->assertNotNull($vet->veterinario); // con su ficha en la tabla veterinarios
+        $this->assertTrue($vet->debe_cambiar_password);
+        $this->assertTrue(Hash::check('00000000', $vet->password));
     }
 }

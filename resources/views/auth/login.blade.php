@@ -40,13 +40,13 @@
         </div>
 
         <div class="text-end mb-3">
-            <span class="forgot-link text-muted">¿Olvidaste tu contraseña? Pedile a un administrador que la restablezca.</span>
+            <span class="forgot-link text-muted">¿Olvidaste tu contraseña? Pedile a un veterinario que la restablezca.</span>
         </div>
 
         <button type="submit" class="btn btn-primary w-100">Ingresar</button>
 
         <div class="text-center mt-3" style="font-size: 0.85rem;">
-            ¿No tenés cuenta? Pedile a un administrador que te dé de alta.
+            ¿No tenés cuenta? Pedile a un veterinario que te dé de alta.
         </div>
     </form>
 @endsection

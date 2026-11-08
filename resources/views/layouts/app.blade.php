@@ -46,12 +46,7 @@
                     <span class="user-label me-2 d-none d-sm-inline">{{ Auth::user()->nombre_rol }} {{ Auth::user()->name }}</span>
                     <span class="user-avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 2)) }}</span>
                 </a>
-                @if (Auth::user()->esAdmin())
-                    <a href="{{ route('usuarios.index') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Usuarios">
-                        <i class="bi bi-people-fill"></i>
-                    </a>
-                @endif
-                <a href="{{ route('password.edit') }}" class="btn btn-sm btn-outline-secondary ms-2" title="Cambiar contraseña">
+                <a href="{{ route('password.edit') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Cambiar contraseña">
                     <i class="bi bi-key"></i>
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="ms-2">

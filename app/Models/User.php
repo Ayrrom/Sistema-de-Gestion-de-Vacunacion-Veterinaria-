@@ -13,13 +13,15 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const ROL_ADMIN = 'admin';
+    /**
+     * Roles del sistema. No hay administrador: el veterinario administra
+     * (da de alta y de baja, restablece contraseñas, ve estadísticas).
+     */
     public const ROL_VETERINARIO = 'veterinario';
     public const ROL_ESTUDIANTE = 'estudiante';
 
     /** Roles válidos con su nombre para mostrar. */
     public const ROLES = [
-        self::ROL_ADMIN => 'Administrador',
         self::ROL_VETERINARIO => 'Veterinario',
         self::ROL_ESTUDIANTE => 'Estudiante',
     ];
@@ -119,20 +121,15 @@ class User extends Authenticatable
         return in_array($this->rolActivo(), $roles, true);
     }
 
-    public function esAdmin(): bool
-    {
-        return $this->rolActivo() === self::ROL_ADMIN;
-    }
-
     public function esVeterinarioActivo(): bool
     {
         return $this->rolActivo() === self::ROL_VETERINARIO;
     }
 
-    /** Admin y veterinario pueden eliminar; el estudiante no. */
+    /** El veterinario puede eliminar; el estudiante no. */
     public function puedeEliminar(): bool
     {
-        return $this->tieneRol(self::ROL_ADMIN, self::ROL_VETERINARIO);
+        return $this->esVeterinarioActivo();
     }
 
     /** Nombre del rol activo (el que se muestra en la barra superior). */

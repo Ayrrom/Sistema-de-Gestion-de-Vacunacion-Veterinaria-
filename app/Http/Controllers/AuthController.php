@@ -52,7 +52,7 @@ class AuthController extends Controller
                 Auth::logout();
 
                 return back()->withErrors([
-                    'dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario o un administrador.',
+                    'dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario.',
                 ])->onlyInput('dni');
             }
 

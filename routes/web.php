@@ -9,7 +9,6 @@ use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PropietarioController;
-use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -34,14 +33,6 @@ Route::middleware(['auth', 'activo'])->group(function () {
 
 // Rutas protegidas que además exigen haber cambiado la contraseña inicial
 Route::middleware(['auth', 'activo', 'cambio.password'])->group(function () {
-    // Gestión de usuarios: solo administradores.
-    Route::middleware('rol:admin')->group(function () {
-        Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
-        Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
-        Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
-        Route::put('/usuarios/{usuario}/restablecer-password', [UsuarioController::class, 'restablecerPassword'])->name('usuarios.restablecer-password');
-    });
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Mi perfil y cambio de vista Veterinario <-> Estudiante (el cambio solo lo puede hacer un veterinario).
@@ -51,17 +42,15 @@ Route::middleware(['auth', 'activo', 'cambio.password'])->group(function () {
     // Estadísticas: solo con el rol de veterinario activo (no en la vista de estudiante).
     Route::get('/estadisticas', [EstadisticaController::class, 'index'])->middleware('rol:veterinario')->name('estadisticas.index');
 
-    // Equipo: el veterinario da de alta veterinarios y estudiantes.
+    // Equipo: el veterinario administra el sistema (no hay rol administrador).
+    // Alta, baja, reactivación y restablecer contraseña de veterinarios y estudiantes.
     Route::middleware('rol:veterinario')->group(function () {
         Route::get('/equipo', [EquipoController::class, 'index'])->name('equipo.index');
         Route::get('/equipo/create', [EquipoController::class, 'create'])->name('equipo.create');
         Route::post('/equipo', [EquipoController::class, 'store'])->name('equipo.store');
-    });
-
-    // Baja y reactivación: veterinario (desde Equipo) y administrador (desde Usuarios).
-    Route::middleware('rol:admin,veterinario')->group(function () {
         Route::put('/equipo/{usuario}/baja', [EquipoController::class, 'baja'])->name('equipo.baja');
         Route::put('/equipo/{usuario}/alta', [EquipoController::class, 'alta'])->name('equipo.alta');
+        Route::put('/equipo/{usuario}/restablecer-password', [EquipoController::class, 'restablecerPassword'])->name('equipo.restablecer-password');
     });
 
     // Autocompletado del DNI (tiene que ir antes del resource para que
@@ -84,8 +73,8 @@ Route::middleware(['auth', 'activo', 'cambio.password'])->group(function () {
     Route::get('/fichas/{ficha}/edit', [FichaClinicaController::class, 'edit'])->name('fichas.edit');
     Route::put('/fichas/{ficha}', [FichaClinicaController::class, 'update'])->name('fichas.update');
 
-    // Eliminar: solo administradores y veterinarios (el estudiante no puede borrar).
-    Route::middleware('rol:admin,veterinario')->group(function () {
+    // Eliminar: solo el veterinario (el estudiante no puede borrar).
+    Route::middleware('rol:veterinario')->group(function () {
         Route::delete('/propietarios/{propietario}', [PropietarioController::class, 'destroy'])->name('propietarios.destroy');
         Route::delete('/mascotas/{mascota}', [MascotaController::class, 'destroy'])->name('mascotas.destroy');
         Route::delete('/fichas/{ficha}', [FichaClinicaController::class, 'destroy'])->name('fichas.destroy');

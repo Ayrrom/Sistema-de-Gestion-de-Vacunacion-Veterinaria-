@@ -9,21 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * "Equipo": el veterinario da de alta y de baja a veterinarios y estudiantes.
+ * "Equipo": el panel de administración del veterinario. Desde acá da de
+ * alta y de baja a veterinarios y estudiantes y les restablece la contraseña.
+ * (No hay rol administrador: administra el veterinario.)
  *
  * La baja no borra al usuario: lo desactiva (no puede ingresar ni aparece en
  * los selectores) y conserva todo su historial. Se puede volver a dar de alta.
- * La baja y la reactivación también las usa el administrador desde Usuarios.
  */
 class EquipoController extends Controller
 {
-    /** Roles que se gestionan desde Equipo. */
-    private const ROLES_EQUIPO = [User::ROL_VETERINARIO, User::ROL_ESTUDIANTE];
-
     public function index()
     {
         $miembros = User::with(['veterinario.estudiantes', 'estudiante.veterinario'])
-            ->whereIn('rol', self::ROLES_EQUIPO)
             ->orderByDesc('activo')
             ->orderBy('name')
             ->get();
@@ -36,7 +33,7 @@ class EquipoController extends Controller
 
     public function create(Request $request)
     {
-        $rol = in_array($request->query('rol'), self::ROLES_EQUIPO, true) ? $request->query('rol') : User::ROL_ESTUDIANTE;
+        $rol = array_key_exists((string) $request->query('rol'), User::ROLES) ? $request->query('rol') : User::ROL_ESTUDIANTE;
         $veterinarios = Veterinario::activos()->orderBy('nombre')->get();
         $miVeterinario = $request->user()->veterinario;
 
@@ -48,7 +45,7 @@ class EquipoController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'dni' => CrearUsuario::REGLAS_DNI,
-            'rol' => ['required', Rule::in(self::ROLES_EQUIPO)],
+            'rol' => ['required', Rule::in(array_keys(User::ROLES))],
             'catedra' => ['nullable', 'string', 'max:255'],
             'veterinario_id' => ['nullable', Rule::exists('veterinarios', 'id')],
         ], CrearUsuario::MENSAJES);
@@ -62,7 +59,7 @@ class EquipoController extends Controller
     /** Dar de baja: desactiva al usuario sin borrar su historial. */
     public function baja(Request $request, User $usuario)
     {
-        $this->autorizar($request->user(), $usuario);
+        $this->noASiMismo($request->user(), $usuario);
 
         $usuario->update(['activo' => false]);
 
@@ -80,25 +77,34 @@ class EquipoController extends Controller
     /** Volver a dar de alta a alguien que estaba dado de baja. */
     public function alta(Request $request, User $usuario)
     {
-        $this->autorizar($request->user(), $usuario);
+        $this->noASiMismo($request->user(), $usuario);
 
         $usuario->update(['activo' => true]);
 
         return back()->with('success', "{$usuario->name} fue dado de alta nuevamente y ya puede ingresar.");
     }
 
+    /** Restablece la contraseña al DNI y obliga a cambiarla en el próximo ingreso. */
+    public function restablecerPassword(Request $request, User $usuario)
+    {
+        $this->noASiMismo($request->user(), $usuario);
+
+        $usuario->update([
+            'password' => $usuario->dni,
+            'debe_cambiar_password' => true,
+        ]);
+
+        return back()->with('success', "La contraseña de {$usuario->name} se restableció a su DNI. Va a tener que cambiarla al ingresar.");
+    }
+
     /**
-     * Nadie puede darse de baja a sí mismo. El veterinario solo gestiona
-     * veterinarios y estudiantes; el administrador, a cualquiera.
+     * Nadie puede darse de baja ni restablecerse la contraseña a sí mismo
+     * (para su propia contraseña está "Cambiar contraseña").
      */
-    private function autorizar(User $actor, User $usuario): void
+    private function noASiMismo(User $actor, User $usuario): void
     {
         if ($actor->id === $usuario->id) {
-            abort(403, 'No podés darte de baja a vos mismo.');
-        }
-
-        if (! $actor->esAdmin() && ! in_array($usuario->rol, self::ROLES_EQUIPO, true)) {
-            abort(403, 'Solo podés gestionar veterinarios y estudiantes.');
+            abort(403, 'No podés hacer esta acción sobre tu propio usuario.');
         }
     }
 }
