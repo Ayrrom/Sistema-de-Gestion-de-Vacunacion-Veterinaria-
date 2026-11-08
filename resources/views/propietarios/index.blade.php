@@ -45,7 +45,7 @@
                                     </a>
                                     @if (Auth::user()->puedeEliminar())
                                         <form action="{{ route('propietarios.destroy', $propietario) }}" method="POST" class="d-inline"
-                                              onsubmit="return confirm('¿Seguro que querés eliminar a {{ $propietario->nombre }} {{ $propietario->apellido }}?');">
+                                              onsubmit="return confirm({{ Js::from('¿Seguro que querés eliminar a ' . $propietario->nombre . ' ' . $propietario->apellido . '?') }});">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
