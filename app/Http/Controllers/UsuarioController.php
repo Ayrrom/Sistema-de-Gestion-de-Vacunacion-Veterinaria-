@@ -38,7 +38,7 @@ class UsuarioController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'dni' => ['required', 'string', 'max:8', 'unique:users,dni', 'unique:veterinarios,dni', 'unique:estudiantes,dni'],
+            'dni' => ['required', 'string', 'max:8', 'regex:/^[0-9]+$/', 'unique:users,dni', 'unique:veterinarios,dni', 'unique:estudiantes,dni'],
             'rol' => ['required', Rule::in(array_keys(User::ROLES))],
             'catedra' => ['nullable', 'string', 'max:255'],
             'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
@@ -47,6 +47,7 @@ class UsuarioController extends Controller
             'dni.required' => 'Ingresá el DNI.',
             'dni.unique' => 'Ya existe una persona registrada con ese DNI.',
             'dni.max' => 'El DNI puede tener como máximo 8 caracteres.',
+            'dni.regex' => 'El DNI solo puede tener números.',
             'rol.required' => 'Seleccioná el rol.',
             'rol.in' => 'El rol seleccionado no es válido.',
             'veterinario_id.exists' => 'El veterinario seleccionado no es válido.',

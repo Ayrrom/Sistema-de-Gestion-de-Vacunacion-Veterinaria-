@@ -21,7 +21,7 @@
                 <div class="col-md-6">
                     <label for="dni" class="form-label">DNI *</label>
                     <input type="text" class="form-control @error('dni') is-invalid @enderror"
-                           id="dni" name="dni" maxlength="8" placeholder="Ingrese el DNI" value="{{ old('dni') }}">
+                           id="dni" name="dni" maxlength="8" inputmode="numeric" pattern="[0-9]*" title="Solo números" data-solo-numeros placeholder="Ingrese el DNI" value="{{ old('dni') }}">
                     @error('dni') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 

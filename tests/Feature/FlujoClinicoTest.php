@@ -167,8 +167,12 @@ class FlujoClinicoTest extends TestCase
 
         $this->post('/propietarios', $this->propietario(['dni' => '123456789']))
             ->assertSessionHasErrors(['dni' => 'El DNI puede tener como máximo 8 caracteres.']);
-        $this->get('/propietarios/create')->assertSee('maxlength="8"', false);
-        $this->get('/mascotas/create')->assertSee('maxlength="8"', false);
+        $this->get('/propietarios/create')->assertSee('maxlength="8"', false)->assertSee('data-solo-numeros', false);
+        $this->get('/mascotas/create')->assertSee('maxlength="8"', false)->assertSee('data-solo-numeros', false);
+        $this->post('/propietarios', $this->propietario(['dni' => '3011A222']))
+            ->assertSessionHasErrors(['dni' => 'El DNI solo puede tener números.']);
+        $this->post('/propietarios', $this->propietario(['dni' => '30.111.2']))
+            ->assertSessionHasErrors(['dni' => 'El DNI solo puede tener números.']);
 
         $this->post('/mascotas', $this->mascota(['propietario_dni' => '999']))->assertSessionHasErrors('propietario_dni');
         $this->post('/mascotas', $this->mascota(['peso' => 'mucho']))->assertSessionHasErrors(['peso' => 'El peso tiene que ser un número.']);

@@ -30,7 +30,7 @@ class PropietarioRequest extends FormRequest
         // El DNI solo se carga en el alta: es la clave que usan las mascotas
         // y no se puede modificar después.
         if ($this->isMethod('post')) {
-            $rules['dni'] = ['required', 'string', 'max:8', 'unique:propietarios,dni'];
+            $rules['dni'] = ['required', 'string', 'max:8', 'regex:/^[0-9]+$/', 'unique:propietarios,dni'];
         }
 
         return $rules;
@@ -42,6 +42,7 @@ class PropietarioRequest extends FormRequest
             'dni.required' => 'Ingresá el DNI del propietario.',
             'dni.unique' => 'Ya existe un propietario registrado con ese DNI.',
             'dni.max' => 'El DNI puede tener como máximo 8 caracteres.',
+            'dni.regex' => 'El DNI solo puede tener números.',
             'nombre.required' => 'Ingresá el nombre.',
             'apellido.required' => 'Ingresá el apellido.',
             'localidad.required' => 'Ingresá la localidad.',

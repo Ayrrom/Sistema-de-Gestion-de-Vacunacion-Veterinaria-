@@ -17,6 +17,7 @@
                     id="dni"
                     name="dni"
                     maxlength="8"
+                    inputmode="numeric" pattern="[0-9]*" title="Solo números" data-solo-numeros
                     placeholder="Ingrese el DNI"
                     data-sugerencias="{{ route('propietarios.sugerencias') }}"
                     data-destino="{{ route('mascotas.create', ['dni' => '__DNI__']) }}"

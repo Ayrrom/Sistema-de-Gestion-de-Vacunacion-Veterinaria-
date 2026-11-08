@@ -22,12 +22,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'dni' => ['required', 'string', 'max:8'],
+            'dni' => ['required', 'string', 'max:8', 'regex:/^[0-9]+$/'],
             'password' => ['required', 'string', 'max:20'],
         ], [
             'dni.required' => 'Ingresá tu DNI.',
             'password.required' => 'Ingresá tu contraseña.',
             'dni.max' => 'El DNI puede tener como máximo 8 caracteres.',
+            'dni.regex' => 'El DNI solo puede tener números.',
             'password.max' => 'La contraseña puede tener como máximo 20 caracteres.',
         ]);
 

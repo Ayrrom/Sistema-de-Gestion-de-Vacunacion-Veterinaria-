@@ -16,6 +16,7 @@
                     id="dni"
                     name="dni"
                     maxlength="8"
+                    inputmode="numeric" pattern="[0-9]*" title="Solo números" data-solo-numeros
                     placeholder="Ingrese su DNI"
                     value="{{ old('dni') }}"
                     autofocus

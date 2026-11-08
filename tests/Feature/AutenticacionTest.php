@@ -148,6 +148,19 @@ class AutenticacionTest extends TestCase
             ->assertRedirect(route('dashboard'));
     }
 
+    public function test_el_dni_del_login_solo_acepta_numeros(): void
+    {
+        $this->get('/login')
+            ->assertSee('data-solo-numeros', false)
+            ->assertSee('inputmode="numeric"', false)
+            ->assertSee('js/solo-numeros.js');
+
+        foreach (['4011122a', 'abc', '40.111.2', '40 11122'] as $dni) {
+            $this->post('/login', ['dni' => $dni, 'password' => 'x'])
+                ->assertSessionHasErrors(['dni' => 'El DNI solo puede tener números.']);
+        }
+    }
+
     public function test_la_nueva_contrasena_tiene_entre_8_y_20_caracteres(): void
     {
         $this->actingAs($this->usuarioNuevo());

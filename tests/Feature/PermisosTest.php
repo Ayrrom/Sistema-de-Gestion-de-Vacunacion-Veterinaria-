@@ -122,7 +122,9 @@ class PermisosTest extends TestCase
         $this->post('/usuarios', ['name' => 'X', 'dni' => $admin->dni, 'rol' => 'estudiante'])->assertSessionHasErrors('dni');
         $this->post('/usuarios', ['name' => 'X', 'dni' => '123456789', 'rol' => 'estudiante'])
             ->assertSessionHasErrors(['dni' => 'El DNI puede tener como máximo 8 caracteres.']);
-        $this->get('/usuarios/create')->assertSee('maxlength="8"', false);
+        $this->get('/usuarios/create')->assertSee('maxlength="8"', false)->assertSee('data-solo-numeros', false);
+        $this->post('/usuarios', ['name' => 'X', 'dni' => '4011abc', 'rol' => 'estudiante'])
+            ->assertSessionHasErrors(['dni' => 'El DNI solo puede tener números.']);
 
         $this->assertDatabaseCount('users', 1);
     }
