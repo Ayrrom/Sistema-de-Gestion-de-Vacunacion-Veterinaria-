@@ -16,6 +16,7 @@
                     class="form-control"
                     id="dni"
                     name="dni"
+                    maxlength="8"
                     placeholder="Ingrese el DNI"
                     autofocus
                 >

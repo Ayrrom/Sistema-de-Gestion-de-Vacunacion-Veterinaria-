@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-title">Cambiar contraseña</div>
-    <div class="page-subtitle">La nueva contraseña tiene que tener al menos 8 caracteres y no puede ser tu DNI</div>
+    <div class="page-subtitle">La nueva contraseña tiene que tener entre 8 y 20 caracteres y no puede ser tu DNI</div>
 
     <div class="page-card" style="max-width: 480px;">
         <form method="POST" action="{{ route('password.update') }}">
@@ -18,6 +18,7 @@
                     class="form-control @error('password_actual') is-invalid @enderror"
                     id="password_actual"
                     name="password_actual"
+                    maxlength="20"
                     autocomplete="current-password"
                     autofocus
                 >
@@ -36,6 +37,7 @@
                     class="form-control @error('password') is-invalid @enderror"
                     id="password"
                     name="password"
+                    maxlength="20"
                     autocomplete="new-password"
                 >
                 @error('password')
@@ -50,6 +52,7 @@
                     class="form-control"
                     id="password_confirmation"
                     name="password_confirmation"
+                    maxlength="20"
                     autocomplete="new-password"
                 >
             </div>

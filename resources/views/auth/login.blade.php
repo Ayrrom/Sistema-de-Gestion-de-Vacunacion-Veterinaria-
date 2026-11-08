@@ -15,6 +15,7 @@
                     class="form-control @error('dni') is-invalid @enderror"
                     id="dni"
                     name="dni"
+                    maxlength="8"
                     placeholder="Ingrese su DNI"
                     value="{{ old('dni') }}"
                     autofocus
@@ -31,6 +32,7 @@
                     class="form-control @error('password') is-invalid @enderror"
                     id="password"
                     name="password"
+                    maxlength="20"
                     placeholder="Ingrese su contraseña"
                 >
             </div>

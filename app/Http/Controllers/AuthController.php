@@ -22,11 +22,13 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'dni' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'dni' => ['required', 'string', 'max:8'],
+            'password' => ['required', 'string', 'max:20'],
         ], [
             'dni.required' => 'Ingresá tu DNI.',
             'password.required' => 'Ingresá tu contraseña.',
+            'dni.max' => 'El DNI puede tener como máximo 8 caracteres.',
+            'password.max' => 'La contraseña puede tener como máximo 20 caracteres.',
         ]);
 
         // Límite de 5 intentos fallidos por minuto para el mismo DNI + IP,

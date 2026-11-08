@@ -23,14 +23,16 @@ class PasswordController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'password_actual' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::min(8), 'not_in:' . $user->dni],
+            'password_actual' => ['required', 'max:20', 'current_password'],
+            'password' => ['required', 'confirmed', Password::min(8), 'max:20', 'not_in:' . $user->dni],
         ], [
             'password_actual.required' => 'Ingresá tu contraseña actual.',
             'password_actual.current_password' => 'La contraseña actual no es correcta.',
             'password.required' => 'Ingresá la nueva contraseña.',
             'password.confirmed' => 'Las contraseñas nuevas no coinciden.',
             'password.min' => 'La nueva contraseña tiene que tener al menos 8 caracteres.',
+            'password.max' => 'La nueva contraseña puede tener como máximo 20 caracteres.',
+            'password_actual.max' => 'La contraseña puede tener como máximo 20 caracteres.',
             'password.not_in' => 'La nueva contraseña no puede ser tu DNI.',
         ]);
 

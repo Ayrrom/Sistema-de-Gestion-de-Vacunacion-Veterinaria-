@@ -10,6 +10,7 @@
             class="form-control @error('dni') is-invalid @enderror"
             id="dni"
             name="dni"
+            maxlength="8"
             placeholder="Ingrese DNI"
             value="{{ old('dni', $p->dni ?? '') }}"
             {{ $p ? 'readonly' : '' }}
