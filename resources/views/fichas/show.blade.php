@@ -3,19 +3,6 @@
 @section('title', 'Detalle de Consulta - Veterinaria Uncaus')
 
 @section('content')
-    <style>
-        .badge-estado {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.3rem 0.6rem;
-            border-radius: 999px;
-        }
-        .badge-saludable { background-color: #e5f8ee; color: #16a34a; }
-        .badge-tratamiento { background-color: #fef6e0; color: #b7791f; }
-        .badge-revision { background-color: #eaf0fe; color: #2f6fed; }
-        .dato-label { font-size: 0.78rem; color: #8a90a2; margin-bottom: 0.1rem; }
-        .dato-valor { margin-bottom: 1rem; }
-    </style>
 
     @php
         $badgeClass = match ($ficha->estado) {

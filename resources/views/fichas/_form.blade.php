@@ -198,36 +198,6 @@
 <div class="page-card mb-3">
     <h6 class="fw-bold mb-3">CONDICIÓN CORPORAL</h6>
     <p class="text-muted small mb-3">Seleccione el score de condición corporal del paciente</p>
-    <style>
-        .condicion-opcion {
-            cursor: pointer;
-            width: 90px;
-            border: 1px solid #dfe2ea;
-            border-radius: 10px;
-            padding: 0.6rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s ease;
-        }
-        .condicion-opcion:hover {
-            border-color: #2f6fed;
-        }
-        .condicion-opcion.selected {
-            border-color: #2f6fed;
-            background-color: #eaf0fe;
-        }
-        .condicion-opcion input {
-            display: none;
-        }
-        .condicion-opcion img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-            display: block;
-        }
-    </style>
 
     @php
         $condicionSeleccionada = (string) old('condicion_corporal', $f->condicion_corporal ?? '');

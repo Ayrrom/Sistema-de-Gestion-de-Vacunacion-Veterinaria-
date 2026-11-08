@@ -3,52 +3,6 @@
 @section('title', 'Inicio - Veterinaria Uncaus')
 
 @section('content')
-    <style>
-        .badge-estado {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.3rem 0.6rem;
-            border-radius: 999px;
-        }
-        .badge-saludable { background-color: #e5f8ee; color: #16a34a; }
-        .badge-tratamiento { background-color: #fef6e0; color: #b7791f; }
-        .badge-revision { background-color: #eaf0fe; color: #2f6fed; }
-        .badge-sin-consultas { background-color: #f0f1f5; color: #8a90a2; }
-
-        .paciente-card {
-            background: #fff;
-            border-radius: 14px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            padding: 1.25rem;
-            height: 100%;
-        }
-
-        .paciente-nombre {
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: #1f2430;
-        }
-
-        .paciente-detalle {
-            font-size: 0.82rem;
-            color: #8a90a2;
-        }
-
-        .btn-ver-detalles {
-            background-color: #eaf0fe;
-            color: #2f6fed;
-            border: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: 8px;
-            padding: 0.45rem 0;
-        }
-
-        .btn-ver-detalles:hover {
-            background-color: #d7e3fd;
-            color: #1f4fc4;
-        }
-    </style>
 
     <div class="page-title">Últimos Pacientes Atendidos</div>
     <div class="page-subtitle">Historial reciente de consultas veterinarias</div>

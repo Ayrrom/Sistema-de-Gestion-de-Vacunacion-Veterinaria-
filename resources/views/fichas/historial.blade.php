@@ -3,18 +3,6 @@
 @section('title', 'Historia Clínica - ' . $mascota->nombre)
 
 @section('content')
-    <style>
-        .badge-estado {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.3rem 0.6rem;
-            border-radius: 999px;
-        }
-        .badge-saludable { background-color: #e5f8ee; color: #16a34a; }
-        .badge-tratamiento { background-color: #fef6e0; color: #b7791f; }
-        .badge-revision { background-color: #eaf0fe; color: #2f6fed; }
-        .badge-sin-consultas { background-color: #f0f1f5; color: #8a90a2; }
-    </style>
 
     <a href="{{ route('mascotas.show', $mascota) }}" class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3" style="font-size:0.9rem; font-weight:600; color:#1f2430;">
         <i class="bi bi-arrow-left"></i> Volver a detalles
