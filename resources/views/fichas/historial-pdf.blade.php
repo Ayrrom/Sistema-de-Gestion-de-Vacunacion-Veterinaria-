@@ -203,7 +203,7 @@
                         <td><span class="label">Sist. urinario</span>{{ $ficha->sistema_urinario ?: '—' }}</td>
                         <td><span class="label">Sist. nervioso</span>{{ $ficha->sistema_nervioso ?: '—' }}</td>
                         <td><span class="label">Sist. locomotor</span>{{ $ficha->sistema_locomotor ?: '—' }}</td>
-                        <td><span class="label">Condición corporal</span>{{ $ficha->condicion_corporal ?? '—' }} / 5</td>
+                        <td><span class="label">Condición corporal</span>@if ($ficha->condicion_corporal){{ $ficha->condicion_corporal }} / 5 - {{ \App\Models\FichaClinica::CONDICIONES_CORPORALES[$ficha->condicion_corporal] ?? '' }}@else — @endif</td>
                     </tr>
                 </table>
             </div>

@@ -327,8 +327,21 @@ class FlujoClinicoTest extends TestCase
         // Cada opción muestra su nombre debajo de la imagen, en orden.
         foreach ([$perro, $gato] as $m) {
             $this->get("/mascotas/{$m->id}/fichas/create")
-                ->assertSeeInOrder(['condicion-texto', 'Caquéctico', 'condicion-texto', 'Delgado', 'condicion-texto', 'Ideal', 'condicion-texto', 'Sobrepeso', 'condicion-texto', 'Obeso']);
+                ->assertSeeInOrder(['condicion-texto', 'Desnutrido', 'condicion-texto', 'Delgado', 'condicion-texto', 'Ideal', 'condicion-texto', 'Sobrepeso', 'condicion-texto', 'Obeso']);
         }
+    }
+
+    public function test_la_condicion_corporal_se_muestra_con_su_nombre_en_detalle_y_pdf(): void
+    {
+        $m = $this->crearPaciente();
+        $ficha = FichaClinica::create(['mascota_id' => $m->id, 'fecha_consulta' => '2026-11-01', 'motivo_consulta' => 'X', 'estado' => 'Saludable', 'condicion_corporal' => 1]);
+
+        $this->get("/fichas/{$ficha->id}")->assertSee('1 - Desnutrido')->assertDontSee('Caquéctico');
+
+        $htmlDelPdf = view('fichas.historial-pdf', ['mascota' => $m->load('propietario'), 'fichas' => $m->fichasClinicas()->with('estudiantes')->get()])->render();
+        $this->assertStringContainsString('1 / 5 - Desnutrido', $htmlDelPdf);
+
+        $this->get("/mascotas/{$m->id}/historial/pdf")->assertOk();
     }
 
     public function test_no_se_elimina_un_propietario_con_mascotas(): void

@@ -26,7 +26,7 @@
             'sistema_locomotor' => 'Sistema locomotor',
         ];
 
-        $condiciones = [1 => 'Caquéctico', 2 => 'Delgado', 3 => 'Ideal', 4 => 'Sobrepeso', 5 => 'Obeso'];
+        $condiciones = \App\Models\FichaClinica::CONDICIONES_CORPORALES;
     @endphp
 
     <a href="{{ route('fichas.historial', $mascota) }}" class="text-decoration-none d-inline-flex align-items-center gap-1 mb-3" style="font-size:0.9rem; font-weight:600; color:#1f2430;">

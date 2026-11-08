@@ -9,6 +9,18 @@ class FichaClinica extends Model
 {
     protected $table = 'fichas_clinicas';
 
+    /**
+     * Nombres de la condición corporal (1 a 5). Es la única lista: la usan
+     * el formulario, el detalle de la ficha y el PDF del historial.
+     */
+    public const CONDICIONES_CORPORALES = [
+        1 => 'Desnutrido',
+        2 => 'Delgado',
+        3 => 'Ideal',
+        4 => 'Sobrepeso',
+        5 => 'Obeso',
+    ];
+
     protected $fillable = [
         'fecha_consulta',
         'veterinario',

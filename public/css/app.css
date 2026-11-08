@@ -233,7 +233,7 @@ body {
     border-radius: 6px;
     display: block;
 }
-/* Nombre de la condición debajo de cada imagen (1 Caquéctico ... 5 Obeso) */
+/* Nombre de la condición debajo de cada imagen (1 Desnutrido ... 5 Obeso) */
 .condicion-texto {
     font-size: 0.78rem;
     font-weight: 600;

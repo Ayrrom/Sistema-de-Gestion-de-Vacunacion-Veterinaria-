@@ -15,13 +15,7 @@
         'sistema_locomotor' => '11. Sistema locomotor',
     ];
 
-    $condiciones = [
-        1 => 'Caquéctico',
-        2 => 'Delgado',
-        3 => 'Ideal',
-        4 => 'Sobrepeso',
-        5 => 'Obeso',
-    ];
+    $condiciones = \App\Models\FichaClinica::CONDICIONES_CORPORALES;
 @endphp
 
 <div class="page-card mb-3">
