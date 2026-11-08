@@ -31,7 +31,7 @@
                         <tr>
                             <td>{{ $usuario->dni }}</td>
                             <td>{{ $usuario->name }}</td>
-                            <td>{{ $usuario->nombre_rol }}</td>
+                            <td>{{ $usuario->nombre_rol_real }}</td>
                             <td>
                                 @if ($usuario->veterinario)
                                     Cátedra: {{ $usuario->veterinario->catedra ?: '—' }}

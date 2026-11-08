@@ -47,6 +47,8 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::clear($claveIntentos);
             $request->session()->regenerate();
+            // Siempre se entra con el rol real (el veterinario entra como veterinario).
+            $request->session()->forget(\App\Models\User::SESION_VISTA_ESTUDIANTE);
 
             return redirect()->intended(route('dashboard'));
         }

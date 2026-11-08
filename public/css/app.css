@@ -274,3 +274,78 @@ body {
     max-height: 360px;
     overflow-y: auto;
 }
+
+/* Aviso cuando el veterinario usa la vista de estudiante (layouts/app) */
+.vista-estudiante-aviso {
+    background-color: #fff4d6;
+    border-bottom: 1px solid #f3d27a;
+    color: #5c4300;
+    font-size: 0.88rem;
+    padding: 0.5rem 0;
+}
+
+/* ===== Estadísticas (estadisticas/index) =====
+   Colores validados con la guía de visualización (paleta categórica,
+   modo claro): Perro = azul, Gato = naranja. Los gráficos de una sola
+   serie usan el azul. Los estados usan la paleta de estado y siempre van
+   con ícono + nombre (nunca solo el color). */
+:root {
+    --viz-serie-1: #2a78d6;      /* azul: Perro / serie única */
+    --viz-serie-2: #eb6834;      /* naranja: Gato */
+    --viz-bien: #0ca30c;
+    --viz-tratamiento: #ec835a;
+    --viz-revision: #fab219;
+    --viz-sin: #b9b8b2;
+    --viz-pista: #f0efec;
+    --viz-texto-sec: #52514e;
+}
+.viz-tile {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.1rem;
+    height: 100%;
+}
+.viz-tile-label { font-size: 0.78rem; color: var(--viz-texto-sec); font-weight: 600; }
+.viz-tile-valor { font-size: 1.9rem; font-weight: 700; color: #1f2430; line-height: 1.2; }
+.viz-tile-valor small { font-size: 0.9rem; font-weight: 600; color: var(--viz-texto-sec); }
+.viz-tile-detalle { font-size: 0.75rem; color: #8a90a2; }
+
+.viz-serie, .viz-perro { background-color: var(--viz-serie-1); }
+.viz-gato { background-color: var(--viz-serie-2); }
+.viz-estado-bien { background-color: var(--viz-bien); }
+.viz-estado-tratamiento { background-color: var(--viz-tratamiento); }
+.viz-estado-revision { background-color: var(--viz-revision); }
+.viz-estado-sin { background-color: var(--viz-sin); }
+.viz-estado-bien-texto { color: var(--viz-bien); }
+.viz-estado-tratamiento-texto { color: var(--viz-tratamiento); }
+.viz-estado-revision-texto { color: #b98100; }
+.viz-estado-sin-texto { color: #8a90a2; }
+
+/* Columnas (consultas por mes) */
+.viz-columnas { display: flex; align-items: flex-end; gap: 2px; height: 200px; }
+.viz-columna { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; cursor: default; }
+.viz-columna-area { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; border-bottom: 1px solid #dfe2ea; }
+.viz-columna-barra { width: 70%; max-width: 36px; border-radius: 4px 4px 0 0; transition: opacity 0.15s; }
+.viz-columna:hover .viz-columna-barra { opacity: 0.75; }
+.viz-columna-valor { font-size: 0.75rem; font-weight: 600; color: #1f2430; margin-bottom: 2px; }
+.viz-columna-etiqueta { font-size: 0.72rem; color: var(--viz-texto-sec); margin-top: 4px; }
+
+/* Barras horizontales */
+.viz-fila { display: flex; align-items: center; gap: 0.6rem; padding: 0.3rem 0; }
+.viz-fila-compacta { padding: 0.12rem 0; }
+.viz-fila-nombre { width: 40%; font-size: 0.85rem; color: #1f2430; }
+.viz-fila-compacta .viz-fila-nombre { width: 18%; }
+.viz-fila-pista { flex: 1; height: 12px; background: var(--viz-pista); border-radius: 4px; overflow: hidden; }
+.viz-fila-barra { height: 100%; border-radius: 0 4px 4px 0; transition: opacity 0.15s; }
+.viz-fila:hover .viz-fila-barra { opacity: 0.75; }
+.viz-fila-valor { width: 2.5rem; text-align: right; font-size: 0.85rem; font-weight: 600; color: #1f2430; }
+.viz-grupo { padding: 0.35rem 0; border-bottom: 1px solid #f0f1f5; }
+.viz-grupo:last-child { border-bottom: none; }
+.viz-grupo-nombre { font-size: 0.82rem; font-weight: 600; color: #1f2430; margin-bottom: 0.15rem; }
+
+/* Leyenda */
+.viz-leyenda { display: flex; gap: 0.9rem; font-size: 0.8rem; color: var(--viz-texto-sec); }
+.viz-muestra { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 0.35rem; vertical-align: middle; }
+
+.viz-tabla-scroll { max-height: 420px; overflow-y: auto; }

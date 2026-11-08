@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\FichaClinicaController;
 use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\PerfilController;
 use App\Http\Controllers\PropietarioController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +42,13 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
     });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Mi perfil y cambio de vista Veterinario <-> Estudiante (el cambio solo lo puede hacer un veterinario).
+    Route::get('/perfil', [PerfilController::class, 'show'])->name('perfil.show');
+    Route::post('/perfil/vista', [PerfilController::class, 'cambiarVista'])->name('perfil.vista');
+
+    // Estadísticas: solo con el rol de veterinario activo (no en la vista de estudiante).
+    Route::get('/estadisticas', [EstadisticaController::class, 'index'])->middleware('rol:veterinario')->name('estadisticas.index');
 
     // Autocompletado del DNI (tiene que ir antes del resource para que
     // "sugerencias" no se tome como el DNI de un propietario).

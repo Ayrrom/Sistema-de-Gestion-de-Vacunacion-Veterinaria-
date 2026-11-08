@@ -27,6 +27,11 @@
                     <a href="{{ route('propietarios.index') }}" class="nav-pill {{ request()->routeIs('propietarios.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i> Propietarios
                     </a>
+                    @if (Auth::user()->esVeterinarioActivo())
+                        <a href="{{ route('estadisticas.index') }}" class="nav-pill {{ request()->routeIs('estadisticas.*') ? 'active' : '' }}">
+                            <i class="bi bi-bar-chart-line"></i> Estadísticas
+                        </a>
+                    @endif
                 </div>
             </div>
 
@@ -34,8 +39,10 @@
                 <a href="{{ route('mascotas.create') }}" class="btn btn-add-paciente me-3">
                     <i class="bi bi-plus-lg"></i> Añadir Paciente
                 </a>
-                <span class="user-label me-2 d-none d-sm-inline">{{ Auth::user()->nombre_rol }} {{ Auth::user()->name }}</span>
-                <span class="user-avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 2)) }}</span>
+                <a href="{{ route('perfil.show') }}" class="d-flex align-items-center text-decoration-none" title="Mi perfil">
+                    <span class="user-label me-2 d-none d-sm-inline">{{ Auth::user()->nombre_rol }} {{ Auth::user()->name }}</span>
+                    <span class="user-avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 2)) }}</span>
+                </a>
                 @if (Auth::user()->esAdmin())
                     <a href="{{ route('usuarios.index') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Usuarios">
                         <i class="bi bi-people-fill"></i>
@@ -53,6 +60,18 @@
             </div>
         </div>
     </nav>
+
+    @if (Auth::user()->enVistaEstudiante())
+        <div class="vista-estudiante-aviso">
+            <div class="container-fluid px-4 d-flex justify-content-between align-items-center gap-3">
+                <span><i class="bi bi-mortarboard"></i> Estás viendo el sistema <strong>como Estudiante</strong>. Algunas acciones y las estadísticas están ocultas.</span>
+                <form method="POST" action="{{ route('perfil.vista') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-dark">Volver a Veterinario</button>
+                </form>
+            </div>
+        </div>
+    @endif
 
     <div class="container-fluid px-4 mt-4">
         @if (session('success'))
