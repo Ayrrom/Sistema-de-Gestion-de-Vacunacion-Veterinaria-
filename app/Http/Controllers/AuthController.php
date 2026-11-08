@@ -46,6 +46,16 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::clear($claveIntentos);
+
+            // Usuario dado de baja: la contraseña es correcta pero no puede entrar.
+            if (Auth::user()->activo === false) {
+                Auth::logout();
+
+                return back()->withErrors([
+                    'dni' => 'Tu usuario fue dado de baja. Consultá con un veterinario o un administrador.',
+                ])->onlyInput('dni');
+            }
+
             $request->session()->regenerate();
             // Siempre se entra con el rol real (el veterinario entra como veterinario).
             $request->session()->forget(\App\Models\User::SESION_VISTA_ESTUDIANTE);

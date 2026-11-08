@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'cambio.password' => \App\Http\Middleware\ObligarCambioPassword::class,
             'rol' => \App\Http\Middleware\VerificarRol::class,
+            'activo' => \App\Http\Middleware\UsuarioActivo::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -33,8 +33,17 @@ class User extends Authenticatable
         'name',
         'dni',
         'rol',
+        'activo',
         'password',
         'debe_cambiar_password',
+    ];
+
+    /**
+     * Valores por defecto al crear un usuario desde el código (los mismos que
+     * pone la base), así un usuario recién creado ya figura como activo.
+     */
+    protected $attributes = [
+        'activo' => true,
     ];
 
     /**
@@ -57,6 +66,7 @@ class User extends Authenticatable
         return [
             'password' => 'hashed',
             'debe_cambiar_password' => 'boolean',
+            'activo' => 'boolean',
         ];
     }
 

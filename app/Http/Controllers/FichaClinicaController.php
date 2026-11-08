@@ -83,7 +83,7 @@ class FichaClinicaController extends Controller
 
         $ficha->load('estudiantes');
 
-        return view('fichas.edit', array_merge(compact('ficha', 'mascota'), $this->listasDelFormulario()));
+        return view('fichas.edit', array_merge(compact('ficha', 'mascota'), $this->listasDelFormulario($ficha)));
     }
 
     /**
@@ -123,11 +123,17 @@ class FichaClinicaController extends Controller
     /**
      * Veterinarios y estudiantes para los selectores del formulario.
      */
-    private function listasDelFormulario(): array
+    private function listasDelFormulario(?FichaClinica $ficha = null): array
     {
         return [
-            'veterinarios' => Veterinario::orderBy('nombre')->get(),
-            'estudiantes' => Estudiante::orderBy('nombre')->get(),
+            // Solo los activos, más los que ya estaban asignados a esta ficha
+            // (aunque después se hayan dado de baja), para no perder el dato al editar.
+            'veterinarios' => Veterinario::activos()
+                ->when($ficha?->veterinario_id, fn ($q) => $q->orWhere('id', $ficha->veterinario_id))
+                ->orderBy('nombre')->get(),
+            'estudiantes' => Estudiante::activos()
+                ->when($ficha, fn ($q) => $q->orWhereIn('id', $ficha->estudiantes()->pluck('estudiantes.id')))
+                ->orderBy('nombre')->get(),
         ];
     }
 

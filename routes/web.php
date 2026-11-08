@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\EstadisticaController;
 use App\Http\Controllers\FichaClinicaController;
 use App\Http\Controllers\MascotaController;
@@ -23,7 +24,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Rutas protegidas (con sesión iniciada)
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'activo'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Cambio de contraseña (accesible aunque falte cambiar la contraseña inicial)
@@ -32,7 +33,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Rutas protegidas que además exigen haber cambiado la contraseña inicial
-Route::middleware(['auth', 'cambio.password'])->group(function () {
+Route::middleware(['auth', 'activo', 'cambio.password'])->group(function () {
     // Gestión de usuarios: solo administradores.
     Route::middleware('rol:admin')->group(function () {
         Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
@@ -49,6 +50,19 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
 
     // Estadísticas: solo con el rol de veterinario activo (no en la vista de estudiante).
     Route::get('/estadisticas', [EstadisticaController::class, 'index'])->middleware('rol:veterinario')->name('estadisticas.index');
+
+    // Equipo: el veterinario da de alta veterinarios y estudiantes.
+    Route::middleware('rol:veterinario')->group(function () {
+        Route::get('/equipo', [EquipoController::class, 'index'])->name('equipo.index');
+        Route::get('/equipo/create', [EquipoController::class, 'create'])->name('equipo.create');
+        Route::post('/equipo', [EquipoController::class, 'store'])->name('equipo.store');
+    });
+
+    // Baja y reactivación: veterinario (desde Equipo) y administrador (desde Usuarios).
+    Route::middleware('rol:admin,veterinario')->group(function () {
+        Route::put('/equipo/{usuario}/baja', [EquipoController::class, 'baja'])->name('equipo.baja');
+        Route::put('/equipo/{usuario}/alta', [EquipoController::class, 'alta'])->name('equipo.alta');
+    });
 
     // Autocompletado del DNI (tiene que ir antes del resource para que
     // "sugerencias" no se tome como el DNI de un propietario).

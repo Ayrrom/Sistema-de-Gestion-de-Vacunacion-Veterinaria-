@@ -349,3 +349,6 @@ body {
 .viz-muestra { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 0.35rem; vertical-align: middle; }
 
 .viz-tabla-scroll { max-height: 420px; overflow-y: auto; }
+
+/* Equipo: filas de personas dadas de baja */
+.equipo-inactivo td { color: #8a90a2; }

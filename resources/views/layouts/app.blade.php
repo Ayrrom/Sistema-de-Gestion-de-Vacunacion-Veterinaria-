@@ -31,6 +31,9 @@
                         <a href="{{ route('estadisticas.index') }}" class="nav-pill {{ request()->routeIs('estadisticas.*') ? 'active' : '' }}">
                             <i class="bi bi-bar-chart-line"></i> Estadísticas
                         </a>
+                        <a href="{{ route('equipo.index') }}" class="nav-pill {{ request()->routeIs('equipo.*') ? 'active' : '' }}">
+                            <i class="bi bi-person-badge"></i> Equipo
+                        </a>
                     @endif
                 </div>
             </div>

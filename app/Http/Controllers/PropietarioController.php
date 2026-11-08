@@ -80,7 +80,7 @@ class PropietarioController extends Controller
      */
     public function create()
     {
-        $veterinarios = Veterinario::orderBy('nombre')->get();
+        $veterinarios = Veterinario::activos()->orderBy('nombre')->get();
 
         return view('propietarios.create', compact('veterinarios'));
     }
@@ -103,7 +103,11 @@ class PropietarioController extends Controller
      */
     public function edit(Propietario $propietario)
     {
-        $veterinarios = Veterinario::orderBy('nombre')->get();
+        // Activos, más el que ya lo atiende aunque se haya dado de baja.
+        $veterinarios = Veterinario::activos()
+            ->when($propietario->veterinario_id, fn ($q) => $q->orWhere('id', $propietario->veterinario_id))
+            ->orderBy('nombre')
+            ->get();
 
         return view('propietarios.edit', compact('propietario', 'veterinarios'));
     }

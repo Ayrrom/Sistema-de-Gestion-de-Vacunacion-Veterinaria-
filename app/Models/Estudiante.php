@@ -32,4 +32,15 @@ class Estudiante extends Model
             ->withPivot('fecha_atencion')
             ->withTimestamps();
     }
+
+    /**
+     * Solo los que pueden aparecer en los selectores: los que no tienen usuario
+     * o cuyo usuario está activo (no dado de baja).
+     */
+    public function scopeActivos($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('user_id')->orWhereHas('user', fn ($u) => $u->where('activo', true));
+        });
+    }
 }
