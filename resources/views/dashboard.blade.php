@@ -105,7 +105,7 @@
                             @endif
                         </div>
 
-                        <a href="{{ route('mascotas.edit', $mascota) }}" class="btn btn-ver-detalles w-100">Ver detalles</a>
+                        <a href="{{ route('mascotas.show', $mascota) }}" class="btn btn-ver-detalles w-100">Ver detalles</a>
                     </div>
                 </div>
             @endforeach

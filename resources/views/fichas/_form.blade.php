@@ -197,62 +197,20 @@
             display: block;
         }
     </style>
-
     @php
         $condicionSeleccionada = (string) old('condicion_corporal', $f->condicion_corporal ?? '');
-
+        // Las imágenes dependen de la especie del paciente (si no es Gato, se usan las de Perro).
+        $imagenEspecie = $mascota->especie === 'Gato' ? 'gato' : 'perro';
     @endphp
 
-    <div class="condicion-set d-flex gap-2 flex-wrap" data-especie="Gato">
+    <div class="condicion-set d-flex gap-2 flex-wrap">
         @foreach ($condiciones as $valor => $etiqueta)
             <label class="condicion-opcion {{ $condicionSeleccionada === (string) $valor ? 'selected' : '' }}">
                 <input type="radio" name="condicion_corporal" value="{{ $valor }}" onchange="document.querySelectorAll('.condicion-opcion').forEach(el => el.classList.remove('selected')); this.closest('.condicion-opcion').classList.add('selected');" {{ $condicionSeleccionada === (string) $valor ? 'checked' : '' }}>
-                <img src="{{ asset('images/condicion/gato-' . $valor . '.jpg') }}" alt="Condición corporal {{ $valor }}">
+                <img src="{{ asset('images/condicion/' . $imagenEspecie . '-' . $valor . '.jpg') }}" alt="Condición corporal {{ $valor }}: {{ $etiqueta }}">
             </label>
         @endforeach
     </div>
-
-    <div class="condicion-set d-flex gap-2 flex-wrap" data-especie="Perro" style="display: none;">
-        @foreach ($condiciones as $valor => $etiqueta)
-            <label class="condicion-opcion {{ $condicionSeleccionada === (string) $valor ? 'selected' : '' }}">
-                <input type="radio" name="condicion_corporal" value="{{ $valor }}" onchange="document.querySelectorAll('.condicion-opcion').forEach(el => el.classList.remove('selected')); this.closest('.condicion-opcion').classList.add('selected');" {{ $condicionSeleccionada === (string) $valor ? 'checked' : '' }}>
-                <img src="{{ asset('images/condicion/perro-' . $valor . '.jpg') }}" alt="Condición corporal {{ $valor }}">
-            </label>
-        @endforeach
-    </div>
-
-    <script>
-        (function () {
-            function actualizarSetCondicion() {
-                var especieSelect = document.getElementById('especie');
-                if (!especieSelect) return;
-                var especie = especieSelect.value;
-                var sets = document.querySelectorAll('.condicion-set');
-                var algunoVisible = false;
-
-                sets.forEach(function (set) {
-                    if (set.dataset.especie === especie) {
-                        set.style.display = 'flex';
-                        algunoVisible = true;
-                    } else {
-                        set.style.display = 'none';
-                    }
-                });
-
-                // Si la especie no es Perro ni Gato, mostramos el set de Perro como genérico.
-                if (!algunoVisible) {
-                    var setPerro = document.querySelector('.condicion-set[data-especie="Perro"]');
-                    if (setPerro) setPerro.style.display = 'flex';
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                actualizarSetCondicion();
-                var especieSelect = document.getElementById('especie');
-                if (especieSelect) especieSelect.addEventListener('change', actualizarSetCondicion);
-            });
-        })();
-    </script>
 </div>
 
 <div class="page-card mb-3">

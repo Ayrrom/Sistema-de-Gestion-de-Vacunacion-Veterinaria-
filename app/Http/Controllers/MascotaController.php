@@ -142,6 +142,12 @@ class MascotaController extends Controller
      */
     public function destroy(Mascota $mascota)
     {
+        // No se borra una mascota con historia clínica: se perderían sus fichas
+        // y además la clave foránea de fichas_clinicas lo impide.
+        if ($mascota->fichasClinicas()->exists()) {
+            return back()->with('error', 'No se puede eliminar: el paciente tiene fichas clínicas registradas.');
+        }
+
         $mascota->delete();
 
         return redirect()->route('mascotas.index')
