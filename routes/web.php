@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FichaClinicaController;
 use App\Http\Controllers\MascotaController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PropietarioController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,15 +15,24 @@ Route::get('/', function () {
 // Rutas de invitado (sin sesión iniciada)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    // El límite de intentos fallidos se controla en AuthController@login.
     Route::post('/login', [AuthController::class, 'login']);
-
-    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
 });
 
 // Rutas protegidas (con sesión iniciada)
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Cambio de contraseña (accesible aunque falte cambiar la contraseña inicial)
+    Route::get('/password', [PasswordController::class, 'edit'])->name('password.edit');
+    Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
+});
+
+// Rutas protegidas que además exigen haber cambiado la contraseña inicial
+Route::middleware(['auth', 'cambio.password'])->group(function () {
+    // Alta de usuarios: solo un usuario ya logueado puede crear otros.
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

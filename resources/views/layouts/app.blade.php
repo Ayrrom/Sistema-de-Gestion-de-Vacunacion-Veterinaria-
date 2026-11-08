@@ -188,7 +188,13 @@
                 </a>
                 <span class="user-label me-2 d-none d-sm-inline">Veterinario {{ Auth::user()->name }}</span>
                 <span class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
-                <form method="POST" action="{{ route('logout') }}" class="ms-3">
+                <a href="{{ route('register') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Nuevo usuario">
+                    <i class="bi bi-person-plus"></i>
+                </a>
+                <a href="{{ route('password.edit') }}" class="btn btn-sm btn-outline-secondary ms-2" title="Cambiar contraseña">
+                    <i class="bi bi-key"></i>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" class="ms-2">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-secondary">
                         <i class="bi bi-box-arrow-right"></i>

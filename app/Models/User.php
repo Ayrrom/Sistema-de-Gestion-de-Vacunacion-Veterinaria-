@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'dni',
         'password',
+        'debe_cambiar_password',
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'debe_cambiar_password' => 'boolean',
         ];
     }
 }

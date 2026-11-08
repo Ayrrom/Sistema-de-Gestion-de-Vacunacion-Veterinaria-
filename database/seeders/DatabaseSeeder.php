@@ -11,15 +11,23 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * Crea el usuario administrador inicial si todavía no existe.
+     * Como el registro público está cerrado, este usuario es el que da de
+     * alta al resto. El DNI y el nombre se pueden definir con las variables
+     * ADMIN_DNI y ADMIN_NAME. La contraseña inicial es el DNI y se pide
+     * cambiarla en el primer ingreso.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $dni = env('ADMIN_DNI', '00000000');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        User::firstOrCreate(
+            ['dni' => $dni],
+            [
+                'name' => env('ADMIN_NAME', 'Administrador'),
+                'password' => $dni,
+                'debe_cambiar_password' => true,
+            ]
+        );
     }
 }
