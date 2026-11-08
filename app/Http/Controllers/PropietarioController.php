@@ -41,6 +41,29 @@ class PropietarioController extends Controller
     }
 
     /**
+     * Sugerencias para el autocompletado del DNI: hasta 10 propietarios
+     * cuyo DNI empieza con lo que se lleva escrito. Devuelve JSON.
+     */
+    public function sugerencias(Request $request)
+    {
+        $inicio = preg_replace('/\D/', '', (string) $request->query('dni', ''));
+
+        if ($inicio === '') {
+            return response()->json([]);
+        }
+
+        $propietarios = Propietario::where('dni', 'like', substr($inicio, 0, 8) . '%')
+            ->orderBy('dni')
+            ->limit(10)
+            ->get(['dni', 'nombre', 'apellido']);
+
+        return response()->json($propietarios->map(fn ($p) => [
+            'dni' => $p->dni,
+            'nombre' => "{$p->nombre} {$p->apellido}",
+        ]));
+    }
+
+    /**
      * Perfil del propietario con sus mascotas.
      */
     public function show(Propietario $propietario)

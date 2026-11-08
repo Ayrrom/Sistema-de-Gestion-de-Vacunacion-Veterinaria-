@@ -41,6 +41,9 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Autocompletado del DNI (tiene que ir antes del resource para que
+    // "sugerencias" no se tome como el DNI de un propietario).
+    Route::get('/propietarios/sugerencias', [PropietarioController::class, 'sugerencias'])->name('propietarios.sugerencias');
     Route::resource('propietarios', PropietarioController::class)->except(['destroy']);
 
     Route::get('/mascotas', [MascotaController::class, 'index'])->name('mascotas.index');

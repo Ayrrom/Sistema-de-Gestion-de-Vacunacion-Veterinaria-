@@ -22,12 +22,14 @@
                     name="buscar"
                     class="form-control"
                     placeholder="Buscar por DNI, nombre o apellido..."
+                    data-sugerencias="{{ route('propietarios.sugerencias') }}"
+                    data-destino="{{ route('propietarios.show', '__DNI__') }}"
                     value="{{ $busqueda }}"
                     autofocus
                 >
                 <button type="submit" class="btn btn-guardar">Buscar</button>
             </div>
-            <div class="form-text">Con el DNI completo se abre directamente el perfil del propietario.</div>
+            <div class="form-text">Escribí el DNI y elegí al propietario de la lista, o escribilo completo y apretá Buscar.</div>
         </form>
     </div>
 

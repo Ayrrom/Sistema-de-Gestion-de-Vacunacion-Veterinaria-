@@ -66,5 +66,6 @@
         @yield('content')
     </div>
 
+    <script src="{{ asset('js/sugerencias-dni.js') }}" defer></script>
 </body>
 </html>

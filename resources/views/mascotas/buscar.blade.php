@@ -18,6 +18,8 @@
                     name="dni"
                     maxlength="8"
                     placeholder="Ingrese el DNI"
+                    data-sugerencias="{{ route('propietarios.sugerencias') }}"
+                    data-destino="{{ route('mascotas.create', ['dni' => '__DNI__']) }}"
                     autofocus
                 >
             </div>

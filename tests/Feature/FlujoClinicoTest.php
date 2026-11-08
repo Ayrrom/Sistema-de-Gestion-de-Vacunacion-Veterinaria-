@@ -102,6 +102,40 @@ class FlujoClinicoTest extends TestCase
         $this->get('/propietarios')->assertSee('Gomez')->assertSee('Lopez');
     }
 
+    public function test_sugerencias_de_dni_devuelven_hasta_10_que_empiezan_con_lo_escrito(): void
+    {
+        foreach (range(10, 22) as $i) { // 13 propietarios con DNI 300000NN
+            Propietario::create(['dni' => "300000{$i}", 'nombre' => "Nombre{$i}", 'apellido' => "Apellido{$i}", 'telefono' => '1', 'calle' => 'J', 'altura' => '1', 'localidad' => 'C']);
+        }
+        Propietario::create(['dni' => '41000000', 'nombre' => 'Otro', 'apellido' => 'Inicio', 'telefono' => '1', 'calle' => 'J', 'altura' => '1', 'localidad' => 'C']);
+
+        // Con "3" hay 13 que empiezan así: se devuelven solo 10, ordenados por DNI.
+        $respuesta = $this->getJson('/propietarios/sugerencias?dni=3')->assertOk()->assertJsonCount(10);
+        $this->assertSame('30000010', $respuesta->json('0.dni'));
+        $this->assertSame('Nombre10 Apellido10', $respuesta->json('0.nombre'));
+
+        // Al seguir escribiendo se achica la lista.
+        $this->getJson('/propietarios/sugerencias?dni=3000002')->assertJsonCount(3)->assertJsonPath('0.dni', '30000020');
+        $this->getJson('/propietarios/sugerencias?dni=30000015')->assertJsonCount(1)->assertJsonPath('0.dni', '30000015');
+        $this->getJson('/propietarios/sugerencias?dni=4')->assertJsonCount(1)->assertJsonPath('0.dni', '41000000');
+
+        // Solo coincide el comienzo del DNI, no el medio.
+        $this->getJson('/propietarios/sugerencias?dni=0000')->assertJsonCount(0);
+        $this->getJson('/propietarios/sugerencias?dni=9')->assertJsonCount(0);
+        $this->getJson('/propietarios/sugerencias?dni=')->assertJsonCount(0);
+        $this->getJson('/propietarios/sugerencias?dni=abc')->assertJsonCount(0);
+    }
+
+    public function test_sugerencias_requieren_sesion_y_estan_en_ambos_buscadores(): void
+    {
+        $this->get('/propietarios')->assertSee('data-sugerencias="' . route('propietarios.sugerencias') . '"', false);
+        $this->get('/mascotas/create')->assertSee('data-sugerencias="' . route('propietarios.sugerencias') . '"', false);
+        $this->get('/dashboard')->assertSee('js/sugerencias-dni.js');
+
+        auth()->logout();
+        $this->getJson('/propietarios/sugerencias?dni=3')->assertUnauthorized();
+    }
+
     public function test_perfil_del_propietario_muestra_sus_mascotas(): void
     {
         $firulais = $this->crearPaciente();

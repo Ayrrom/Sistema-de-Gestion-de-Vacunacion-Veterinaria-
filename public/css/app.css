@@ -231,3 +231,15 @@ body {
     border-radius: 6px;
     display: block;
 }
+
+/* Autocompletado de DNI (public/js/sugerencias-dni.js) */
+.sugerencias-contenedor {
+    position: relative;
+}
+.sugerencias-lista {
+    position: absolute;
+    z-index: 1050;
+    margin-top: 2px;
+    max-height: 360px;
+    overflow-y: auto;
+}
