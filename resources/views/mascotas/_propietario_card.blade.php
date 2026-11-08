@@ -1,29 +1,29 @@
-<div class="page-card h-100">
+<div class="page-card h-100 datos-propietario">
     <h6 class="fw-bold mb-3">Datos del Propietario</h6>
 
     <div class="mb-2">
         <div class="text-muted small">DNI</div>
-        <div>{{ $propietario->dni }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->dni }}</div>
     </div>
     <div class="mb-2">
         <div class="text-muted small">Nombre</div>
-        <div>{{ $propietario->nombre }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->nombre }}</div>
     </div>
     <div class="mb-2">
         <div class="text-muted small">Apellido</div>
-        <div>{{ $propietario->apellido }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->apellido }}</div>
     </div>
     <div class="mb-2">
         <div class="text-muted small">Dirección</div>
-        <div>{{ $propietario->calle }} {{ $propietario->altura }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->calle }} {{ $propietario->altura }}</div>
     </div>
     <div class="mb-2">
         <div class="text-muted small">Localidad</div>
-        <div>{{ $propietario->localidad }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->localidad }}</div>
     </div>
     <div class="mb-3">
         <div class="text-muted small">Teléfonos</div>
-        <div>{{ $propietario->telefono }}</div>
+        <div class="dato-propietario-valor">{{ $propietario->telefono }}</div>
     </div>
 
     @if ($buscarOtro ?? false)

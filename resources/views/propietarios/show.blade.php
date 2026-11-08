@@ -19,7 +19,7 @@
 
     <div class="row g-3">
         <div class="col-md-4">
-            <div class="page-card">
+            <div class="page-card datos-propietario">
                 <h6 class="fw-bold mb-3">Datos del Propietario</h6>
                 <div class="dato-valor"><div class="dato-label">Teléfono</div>{{ $propietario->telefono }}</div>
                 <div class="dato-valor"><div class="dato-label">Dirección</div>{{ $propietario->calle }} {{ $propietario->altura }}</div>

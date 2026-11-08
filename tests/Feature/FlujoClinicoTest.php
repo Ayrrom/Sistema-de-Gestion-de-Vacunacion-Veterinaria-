@@ -254,6 +254,16 @@ class FlujoClinicoTest extends TestCase
             ->assertSee('especie=Perro&amp;page=2', false);
     }
 
+    public function test_los_datos_del_propietario_se_muestran_en_negrita(): void
+    {
+        $m = $this->crearPaciente();
+
+        $this->get('/propietarios/30111222')->assertSee('page-card datos-propietario', false)->assertSee('Junin 123');
+        $this->get("/mascotas/{$m->id}")->assertSee('row datos-propietario', false);
+        $this->get('/mascotas/create?dni=30111222')->assertSee('<div class="dato-propietario-valor">30111222</div>', false);
+        $this->get("/mascotas/{$m->id}/edit")->assertSee('datos-propietario', false);
+    }
+
     public function test_validaciones_de_propietario_y_paciente(): void
     {
         $this->post('/propietarios', [])->assertSessionHasErrors(['dni', 'nombre', 'apellido', 'localidad', 'telefono', 'calle', 'altura']);

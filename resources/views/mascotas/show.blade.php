@@ -38,7 +38,7 @@
 
             <div class="page-card">
                 <h6 class="fw-bold mb-3">Propietario</h6>
-                <div class="row">
+                <div class="row datos-propietario">
                     <div class="col-md-6 dato-valor"><div class="dato-label">Nombre</div>{{ $mascota->propietario->nombre }} {{ $mascota->propietario->apellido }}</div>
                     <div class="col-md-6 dato-valor"><div class="dato-label">DNI</div>{{ $mascota->propietario->dni }}</div>
                     <div class="col-md-6 dato-valor"><div class="dato-label">Teléfono</div>{{ $mascota->propietario->telefono }}</div>

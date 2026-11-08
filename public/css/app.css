@@ -352,3 +352,15 @@ body {
 
 /* Equipo: filas de personas dadas de baja */
 .equipo-inactivo td { color: #8a90a2; }
+
+/* Datos del propietario en negrita (perfil del propietario, detalle del
+   paciente y tarjeta al dar de alta / editar una mascota). La etiqueta
+   (Teléfono, Localidad...) queda normal para que se distinga del dato. */
+.datos-propietario .dato-valor,
+.datos-propietario .dato-propietario-valor {
+    font-weight: 700;
+    color: #1f2430;
+}
+.datos-propietario .dato-label {
+    font-weight: 400;
+}
