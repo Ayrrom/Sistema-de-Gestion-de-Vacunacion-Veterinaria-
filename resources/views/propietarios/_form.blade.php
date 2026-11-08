@@ -111,6 +111,20 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+
+    <div class="col-md-6">
+        <label for="veterinario_id" class="form-label">Veterinario que lo atiende</label>
+        @php $veterinarioSeleccionado = (string) old('veterinario_id', $p->veterinario_id ?? ''); @endphp
+        <select class="form-select @error('veterinario_id') is-invalid @enderror" id="veterinario_id" name="veterinario_id">
+            <option value="">Sin asignar</option>
+            @foreach ($veterinarios as $veterinario)
+                <option value="{{ $veterinario->id }}" {{ $veterinarioSeleccionado === (string) $veterinario->id ? 'selected' : '' }}>{{ $veterinario->nombre }}</option>
+            @endforeach
+        </select>
+        @error('veterinario_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
 </div>
 
 <div class="mt-4 d-flex gap-2">

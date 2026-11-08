@@ -72,14 +72,16 @@
                                     <a href="{{ route('fichas.edit', $ficha) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('fichas.destroy', $ficha) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('¿Seguro que querés eliminar esta consulta?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if (Auth::user()->puedeEliminar())
+                                        <form action="{{ route('fichas.destroy', $ficha) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('¿Seguro que querés eliminar esta consulta?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

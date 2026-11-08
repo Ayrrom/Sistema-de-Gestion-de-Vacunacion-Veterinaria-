@@ -38,8 +38,39 @@
             @error('fecha_consulta') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
         <div class="col-md-6">
-            <label for="veterinario" class="form-label">Médico Veterinario</label>
-            <input type="text" class="form-control" id="veterinario" name="veterinario" placeholder="Nombre del médico veterinario" value="{{ old('veterinario', $f->veterinario ?? '') }}">
+            <label for="veterinario_id" class="form-label">Médico Veterinario</label>
+            @php
+                $veterinarioSeleccionado = (string) old('veterinario_id', $f->veterinario_id ?? Auth::user()->veterinario?->id ?? '');
+            @endphp
+            <select class="form-select @error('veterinario_id') is-invalid @enderror" id="veterinario_id" name="veterinario_id">
+                <option value="">Sin asignar</option>
+                @foreach ($veterinarios as $veterinario)
+                    <option value="{{ $veterinario->id }}" {{ $veterinarioSeleccionado === (string) $veterinario->id ? 'selected' : '' }}>{{ $veterinario->nombre }}</option>
+                @endforeach
+            </select>
+            @error('veterinario_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @if ($f && ! $f->veterinario_id && $f->veterinario)
+                <div class="form-text">Cargado anteriormente como texto: {{ $f->veterinario }}</div>
+            @endif
+        </div>
+
+        <div class="col-12">
+            <label class="form-label d-block">Estudiantes que atendieron</label>
+            @php
+                $estudiantesSeleccionados = array_map('strval', old('estudiantes',
+                    $f ? $f->estudiantes->pluck('id')->all() : array_filter([Auth::user()->estudiante?->id])
+                ));
+            @endphp
+            @forelse ($estudiantes as $estudiante)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="estudiantes[]" id="estudiante_{{ $estudiante->id }}"
+                           value="{{ $estudiante->id }}" {{ in_array((string) $estudiante->id, $estudiantesSeleccionados, true) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="estudiante_{{ $estudiante->id }}">{{ $estudiante->nombre }}</label>
+                </div>
+            @empty
+                <div class="form-text">Todavía no hay estudiantes registrados.</div>
+            @endforelse
+            @error('estudiantes.*') <div class="text-danger small">{{ $message }}</div> @enderror
         </div>
     </div>
 </div>

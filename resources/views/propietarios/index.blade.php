@@ -26,6 +26,7 @@
                             <th>Apellido</th>
                             <th>Localidad</th>
                             <th>Teléfono</th>
+                            <th>Veterinario</th>
                             <th class="text-end">Acciones</th>
                         </tr>
                     </thead>
@@ -37,18 +38,21 @@
                                 <td>{{ $propietario->apellido }}</td>
                                 <td>{{ $propietario->localidad }}</td>
                                 <td>{{ $propietario->telefono }}</td>
+                                <td>{{ $propietario->veterinario->nombre ?? '—' }}</td>
                                 <td class="text-end">
                                     <a href="{{ route('propietarios.edit', $propietario) }}" class="btn btn-sm btn-outline-primary">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('propietarios.destroy', $propietario) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('¿Seguro que querés eliminar a {{ $propietario->nombre }} {{ $propietario->apellido }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    @if (Auth::user()->puedeEliminar())
+                                        <form action="{{ route('propietarios.destroy', $propietario) }}" method="POST" class="d-inline"
+                                              onsubmit="return confirm('¿Seguro que querés eliminar a {{ $propietario->nombre }} {{ $propietario->apellido }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

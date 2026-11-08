@@ -43,7 +43,7 @@
         <button type="submit" class="btn btn-primary w-100">Ingresar</button>
 
         <div class="text-center mt-3" style="font-size: 0.85rem;">
-            ¿No tenés cuenta? Pedile a un usuario del sistema que te dé de alta.
+            ¿No tenés cuenta? Pedile a un administrador que te dé de alta.
         </div>
     </form>
 @endsection

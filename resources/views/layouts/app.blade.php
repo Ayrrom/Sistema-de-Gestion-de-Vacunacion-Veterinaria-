@@ -186,11 +186,13 @@
                 <a href="{{ route('mascotas.create') }}" class="btn btn-add-paciente me-3">
                     <i class="bi bi-plus-lg"></i> Añadir Paciente
                 </a>
-                <span class="user-label me-2 d-none d-sm-inline">Veterinario {{ Auth::user()->name }}</span>
-                <span class="user-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 2)) }}</span>
-                <a href="{{ route('register') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Nuevo usuario">
-                    <i class="bi bi-person-plus"></i>
-                </a>
+                <span class="user-label me-2 d-none d-sm-inline">{{ Auth::user()->nombre_rol }} {{ Auth::user()->name }}</span>
+                <span class="user-avatar">{{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 2)) }}</span>
+                @if (Auth::user()->esAdmin())
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-sm btn-outline-secondary ms-3" title="Usuarios">
+                        <i class="bi bi-people-fill"></i>
+                    </a>
+                @endif
                 <a href="{{ route('password.edit') }}" class="btn btn-sm btn-outline-secondary ms-2" title="Cambiar contraseña">
                     <i class="bi bi-key"></i>
                 </a>

@@ -154,6 +154,11 @@
                 <div class="seccion-titulo">Motivo de consulta</div>
                 <div>{{ $ficha->motivo_consulta }}</div>
 
+                @if ($ficha->estudiantes->isNotEmpty())
+                    <div class="seccion-titulo">Estudiantes que atendieron</div>
+                    <div>{{ $ficha->estudiantes->pluck('nombre')->join(', ') }}</div>
+                @endif
+
                 <div class="seccion-titulo">Vacunas y Desparasitación</div>
                 <table class="detalle">
                     <tr>

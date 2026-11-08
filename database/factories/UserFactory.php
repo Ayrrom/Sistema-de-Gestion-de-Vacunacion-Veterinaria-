@@ -27,6 +27,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'dni' => (string) fake()->unique()->numberBetween(10000000, 99999999),
+            'rol' => User::ROL_ADMIN,
             'password' => static::$password ??= Hash::make('password'),
             'debe_cambiar_password' => false,
             'remember_token' => Str::random(10),

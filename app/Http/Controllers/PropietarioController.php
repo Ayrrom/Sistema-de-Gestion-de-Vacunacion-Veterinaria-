@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Propietario;
+use App\Models\Veterinario;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 
@@ -13,7 +14,7 @@ class PropietarioController extends Controller
      */
     public function index()
     {
-        $propietarios = Propietario::orderBy('apellido')->orderBy('nombre')->get();
+        $propietarios = Propietario::with('veterinario')->orderBy('apellido')->orderBy('nombre')->get();
 
         return view('propietarios.index', compact('propietarios'));
     }
@@ -23,7 +24,9 @@ class PropietarioController extends Controller
      */
     public function create()
     {
-        return view('propietarios.create');
+        $veterinarios = Veterinario::orderBy('nombre')->get();
+
+        return view('propietarios.create', compact('veterinarios'));
     }
 
     /**
@@ -39,6 +42,7 @@ class PropietarioController extends Controller
             'telefono' => ['required', 'string', 'max:50'],
             'calle' => ['required', 'string', 'max:255'],
             'altura' => ['required', 'string', 'max:20'],
+            'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
         ], [
             'dni.required' => 'Ingresá el DNI del propietario.',
             'dni.unique' => 'Ya existe un propietario registrado con ese DNI.',
@@ -61,7 +65,9 @@ class PropietarioController extends Controller
      */
     public function edit(Propietario $propietario)
     {
-        return view('propietarios.edit', compact('propietario'));
+        $veterinarios = Veterinario::orderBy('nombre')->get();
+
+        return view('propietarios.edit', compact('propietario', 'veterinarios'));
     }
 
     /**
@@ -78,6 +84,7 @@ class PropietarioController extends Controller
             'telefono' => ['required', 'string', 'max:50'],
             'calle' => ['required', 'string', 'max:255'],
             'altura' => ['required', 'string', 'max:20'],
+            'veterinario_id' => ['nullable', 'exists:veterinarios,id'],
         ], [
             'nombre.required' => 'Ingresá el nombre.',
             'apellido.required' => 'Ingresá el apellido.',

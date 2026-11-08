@@ -59,6 +59,7 @@
         <div class="row">
             <div class="col-md-4 dato-valor"><div class="dato-label">Médico Veterinario</div>{{ $ficha->veterinario ?: '—' }}</div>
             <div class="col-md-8 dato-valor"><div class="dato-label">Motivo de consulta</div>{{ $ficha->motivo_consulta }}</div>
+            <div class="col-12 dato-valor"><div class="dato-label">Estudiantes que atendieron</div>{{ $ficha->estudiantes->pluck('nombre')->join(', ') ?: '—' }}</div>
         </div>
     </div>
 

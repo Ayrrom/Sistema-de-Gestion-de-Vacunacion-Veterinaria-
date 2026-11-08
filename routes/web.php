@@ -6,6 +6,7 @@ use App\Http\Controllers\FichaClinicaController;
 use App\Http\Controllers\MascotaController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PropietarioController;
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,13 +31,17 @@ Route::middleware('auth')->group(function () {
 
 // Rutas protegidas que además exigen haber cambiado la contraseña inicial
 Route::middleware(['auth', 'cambio.password'])->group(function () {
-    // Alta de usuarios: solo un usuario ya logueado puede crear otros.
-    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    // Gestión de usuarios: solo administradores.
+    Route::middleware('rol:admin')->group(function () {
+        Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+        Route::get('/usuarios/create', [UsuarioController::class, 'create'])->name('usuarios.create');
+        Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+        Route::put('/usuarios/{usuario}/restablecer-password', [UsuarioController::class, 'restablecerPassword'])->name('usuarios.restablecer-password');
+    });
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('propietarios', PropietarioController::class)->except(['show']);
+    Route::resource('propietarios', PropietarioController::class)->except(['show', 'destroy']);
 
     Route::get('/mascotas', [MascotaController::class, 'index'])->name('mascotas.index');
     Route::get('/mascotas/create', [MascotaController::class, 'create'])->name('mascotas.create');
@@ -44,7 +49,6 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
     Route::get('/mascotas/{mascota}', [MascotaController::class, 'show'])->name('mascotas.show');
     Route::get('/mascotas/{mascota}/edit', [MascotaController::class, 'edit'])->name('mascotas.edit');
     Route::put('/mascotas/{mascota}', [MascotaController::class, 'update'])->name('mascotas.update');
-    Route::delete('/mascotas/{mascota}', [MascotaController::class, 'destroy'])->name('mascotas.destroy');
 
     Route::get('/mascotas/{mascota}/fichas/create', [FichaClinicaController::class, 'create'])->name('fichas.create');
     Route::post('/mascotas/{mascota}/fichas', [FichaClinicaController::class, 'store'])->name('fichas.store');
@@ -53,5 +57,11 @@ Route::middleware(['auth', 'cambio.password'])->group(function () {
     Route::get('/fichas/{ficha}', [FichaClinicaController::class, 'show'])->name('fichas.show');
     Route::get('/fichas/{ficha}/edit', [FichaClinicaController::class, 'edit'])->name('fichas.edit');
     Route::put('/fichas/{ficha}', [FichaClinicaController::class, 'update'])->name('fichas.update');
-    Route::delete('/fichas/{ficha}', [FichaClinicaController::class, 'destroy'])->name('fichas.destroy');
+
+    // Eliminar: solo administradores y veterinarios (el estudiante no puede borrar).
+    Route::middleware('rol:admin,veterinario')->group(function () {
+        Route::delete('/propietarios/{propietario}', [PropietarioController::class, 'destroy'])->name('propietarios.destroy');
+        Route::delete('/mascotas/{mascota}', [MascotaController::class, 'destroy'])->name('mascotas.destroy');
+        Route::delete('/fichas/{ficha}', [FichaClinicaController::class, 'destroy'])->name('fichas.destroy');
+    });
 });

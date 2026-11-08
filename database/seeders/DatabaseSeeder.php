@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ['dni' => $dni],
             [
                 'name' => env('ADMIN_NAME', 'Administrador'),
+                'rol' => User::ROL_ADMIN,
                 'password' => $dni,
                 'debe_cambiar_password' => true,
             ]

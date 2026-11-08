@@ -40,6 +40,7 @@ class FichaClinica extends Model
         'sistema_locomotor',
         'condicion_corporal',
         'mascota_id',
+        'veterinario_id',
     ];
 
     protected $casts = [
@@ -53,5 +54,24 @@ class FichaClinica extends Model
     public function mascota()
     {
         return $this->belongsTo(Mascota::class);
+    }
+
+    /**
+     * Veterinario responsable de la consulta.
+     * Se llama "veterinarioResponsable" porque la columna de texto
+     * "veterinario" (nombre guardado al momento de la consulta) ya existe
+     * y Eloquent no permite que una relación y una columna tengan el mismo nombre.
+     */
+    public function veterinarioResponsable()
+    {
+        return $this->belongsTo(Veterinario::class, 'veterinario_id');
+    }
+
+    /** Estudiantes que participaron de la consulta (M:N con fecha_atencion). */
+    public function estudiantes()
+    {
+        return $this->belongsToMany(Estudiante::class, 'estudiante_ficha_clinica')
+            ->withPivot('fecha_atencion')
+            ->withTimestamps();
     }
 }

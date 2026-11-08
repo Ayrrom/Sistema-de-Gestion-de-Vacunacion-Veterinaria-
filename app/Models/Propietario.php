@@ -18,10 +18,17 @@ class Propietario extends Model
         'calle',
         'altura',
         'localidad',
+        'veterinario_id',
     ];
 
     public function mascotas()
     {
         return $this->hasMany(Mascota::class, 'propietario_dni', 'dni');
+    }
+
+    /** Veterinario que lo atiende (relación "atiende" del DER). */
+    public function veterinario()
+    {
+        return $this->belongsTo(Veterinario::class);
     }
 }
