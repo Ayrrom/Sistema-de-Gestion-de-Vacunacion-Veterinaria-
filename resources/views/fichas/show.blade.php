@@ -92,6 +92,13 @@
 
     <div class="page-card">
         <h6 class="fw-bold mb-3">Condición Corporal</h6>
-        <div>{{ $ficha->condicion_corporal ? $ficha->condicion_corporal . ' - ' . $condiciones[$ficha->condicion_corporal] : '—' }}</div>
+        <div>
+            @if ($ficha->condicion_corporal)
+                {{ $ficha->condicion_corporal }} - {{ $condiciones[$ficha->condicion_corporal] }}
+                <span class="text-muted">({{ \App\Models\FichaClinica::REFERENCIAS_PESO[$ficha->condicion_corporal] }})</span>
+            @else
+                —
+            @endif
+        </div>
     </div>
 @endsection

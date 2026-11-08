@@ -191,21 +191,29 @@
 
 <div class="page-card mb-3">
     <h6 class="fw-bold mb-3">CONDICIÓN CORPORAL</h6>
-    <p class="text-muted small mb-3">Seleccione el score de condición corporal del paciente</p>
+    <p class="text-muted small mb-2">Seleccione el score de condición corporal del paciente</p>
+    <p class="small mb-3">
+        <i class="bi bi-speedometer2"></i>
+        Peso registrado de {{ $mascota->nombre }}: <strong>{{ rtrim(rtrim(number_format((float) $mascota->peso, 2, ',', ''), '0'), ',') }} kg</strong>
+        <span class="text-muted">· La referencia de cada opción indica cuánto se aleja del peso ideal.</span>
+    </p>
     @php
         $condicionSeleccionada = (string) old('condicion_corporal', $f->condicion_corporal ?? '');
         // Las imágenes dependen de la especie del paciente (si no es Gato, se usan las de Perro).
         $imagenEspecie = $mascota->especie === 'Gato' ? 'gato' : 'perro';
+        $referenciasPeso = \App\Models\FichaClinica::REFERENCIAS_PESO;
+        $referenciasCortas = \App\Models\FichaClinica::REFERENCIAS_PESO_CORTAS;
     @endphp
 
     <div class="condicion-set d-flex gap-2 flex-wrap">
         @foreach ($condiciones as $valor => $etiqueta)
-            <label class="condicion-opcion {{ $condicionSeleccionada === (string) $valor ? 'selected' : '' }}">
+            <label class="condicion-opcion {{ $condicionSeleccionada === (string) $valor ? 'selected' : '' }}" title="{{ $valor }} - {{ $etiqueta }}: {{ $referenciasPeso[$valor] }}">
                 <input type="radio" name="condicion_corporal" value="{{ $valor }}" onchange="document.querySelectorAll('.condicion-opcion').forEach(el => el.classList.remove('selected')); this.closest('.condicion-opcion').classList.add('selected');" {{ $condicionSeleccionada === (string) $valor ? 'checked' : '' }}>
                 <img src="{{ asset('images/condicion/' . $imagenEspecie . '-' . $valor . '.jpg') }}" alt="Condición corporal {{ $valor }}: {{ $etiqueta }}">
                 <span class="condicion-texto">
                     <span class="condicion-numero">{{ $valor }}</span>
                     {{ $etiqueta }}
+                    <span class="condicion-peso">{{ $referenciasCortas[$valor] }}</span>
                 </span>
             </label>
         @endforeach

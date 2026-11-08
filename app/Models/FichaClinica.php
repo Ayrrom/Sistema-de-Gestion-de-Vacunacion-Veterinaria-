@@ -21,6 +21,27 @@ class FichaClinica extends Model
         5 => 'Obeso',
     ];
 
+    /**
+     * Referencia de peso de cada condición corporal (escala de 5 puntos):
+     * cuánto se aleja el animal de su peso ideal.
+     */
+    public const REFERENCIAS_PESO = [
+        1 => 'Más de 20% bajo el peso ideal',
+        2 => 'Entre 10% y 20% bajo el peso ideal',
+        3 => 'En su peso ideal',
+        4 => 'Entre 10% y 20% sobre el peso ideal',
+        5 => 'Más de 20% sobre el peso ideal',
+    ];
+
+    /** Versión corta de la referencia, para mostrar debajo de cada imagen. */
+    public const REFERENCIAS_PESO_CORTAS = [
+        1 => '-20% o más',
+        2 => '-10% a -20%',
+        3 => 'Peso ideal',
+        4 => '+10% a +20%',
+        5 => '+20% o más',
+    ];
+
     protected $fillable = [
         'fecha_consulta',
         'veterinario',

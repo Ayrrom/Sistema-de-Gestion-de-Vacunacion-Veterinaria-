@@ -336,7 +336,16 @@ class FlujoClinicoTest extends TestCase
         $m = $this->crearPaciente();
         $ficha = FichaClinica::create(['mascota_id' => $m->id, 'fecha_consulta' => '2026-11-01', 'motivo_consulta' => 'X', 'estado' => 'Saludable', 'condicion_corporal' => 1]);
 
-        $this->get("/fichas/{$ficha->id}")->assertSee('1 - Desnutrido')->assertDontSee('Caquéctico');
+        $this->get("/fichas/{$ficha->id}")
+            ->assertSee('1 - Desnutrido')
+            ->assertSee('Más de 20% bajo el peso ideal')
+            ->assertDontSee('Caquéctico');
+
+        // Formulario: peso del paciente y referencia de peso en cada opción.
+        $this->get("/mascotas/{$m->id}/fichas/create")
+            ->assertSee('Peso registrado de Firulais:')
+            ->assertSee('12,5 kg')
+            ->assertSeeInOrder(['Desnutrido', '-20% o más', 'Delgado', '-10% a -20%', 'Ideal', 'Peso ideal', 'Sobrepeso', '+10% a +20%', 'Obeso', '+20% o más']);
 
         $htmlDelPdf = view('fichas.historial-pdf', ['mascota' => $m->load('propietario'), 'fichas' => $m->fichasClinicas()->with('estudiantes')->get()])->render();
         $this->assertStringContainsString('1 / 5 - Desnutrido', $htmlDelPdf);

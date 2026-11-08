@@ -205,7 +205,7 @@ body {
 /* Selector de condición corporal (fichas/_form) */
 .condicion-opcion {
     cursor: pointer;
-    width: 90px;
+    width: 112px;
     border: 1px solid #dfe2ea;
     border-radius: 10px;
     padding: 0.6rem;
@@ -248,6 +248,18 @@ body {
     color: #8a90a2;
 }
 .condicion-opcion.selected .condicion-texto {
+    color: #2f6fed;
+}
+/* Referencia de peso debajo del nombre (ej: "-10% a -20%") */
+.condicion-peso {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #8a90a2;
+    white-space: nowrap;
+}
+.condicion-opcion.selected .condicion-peso {
     color: #2f6fed;
 }
 

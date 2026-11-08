@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 </head>
 <body>
 
@@ -66,7 +66,7 @@
         @yield('content')
     </div>
 
-    <script src="{{ asset('js/solo-numeros.js') }}" defer></script>
-    <script src="{{ asset('js/sugerencias-dni.js') }}" defer></script>
+    <script src="{{ asset('js/solo-numeros.js') }}?v={{ filemtime(public_path('js/solo-numeros.js')) }}" defer></script>
+    <script src="{{ asset('js/sugerencias-dni.js') }}?v={{ filemtime(public_path('js/sugerencias-dni.js')) }}" defer></script>
 </body>
 </html>
