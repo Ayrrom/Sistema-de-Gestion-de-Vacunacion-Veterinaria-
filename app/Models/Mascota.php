@@ -38,4 +38,10 @@ class Mascota extends Model
     {
         return $this->hasMany(FichaClinica::class);
     }
+
+    /** Última consulta (la de fecha más reciente). */
+    public function ultimaFicha()
+    {
+        return $this->hasOne(FichaClinica::class)->ofMany('fecha_consulta', 'max');
+    }
 }

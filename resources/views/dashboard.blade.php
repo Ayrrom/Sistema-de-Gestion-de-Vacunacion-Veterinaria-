@@ -64,5 +64,7 @@
                 </div>
             @endforeach
         </div>
+
+        <div class="mt-3">{{ $mascotas->links() }}</div>
     @endif
 @endsection

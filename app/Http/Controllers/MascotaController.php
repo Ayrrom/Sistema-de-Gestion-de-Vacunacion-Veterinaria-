@@ -14,7 +14,7 @@ class MascotaController extends Controller
      */
     public function index()
     {
-        $mascotas = Mascota::with('propietario')->orderBy('nombre')->get();
+        $mascotas = Mascota::with('propietario')->orderBy('nombre')->paginate(15);
 
         return view('mascotas.index', compact('mascotas'));
     }

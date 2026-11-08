@@ -15,7 +15,7 @@ class PropietarioController extends Controller
      */
     public function index()
     {
-        $propietarios = Propietario::with('veterinario')->orderBy('apellido')->orderBy('nombre')->get();
+        $propietarios = Propietario::with('veterinario')->orderBy('apellido')->orderBy('nombre')->paginate(15);
 
         return view('propietarios.index', compact('propietarios'));
     }

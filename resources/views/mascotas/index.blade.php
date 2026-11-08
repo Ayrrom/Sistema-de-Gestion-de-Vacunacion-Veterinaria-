@@ -62,6 +62,8 @@
                     </tbody>
                 </table>
             </div>
+
+            {{ $mascotas->links() }}
         @endif
     </div>
 @endsection

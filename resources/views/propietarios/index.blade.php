@@ -59,6 +59,8 @@
                     </tbody>
                 </table>
             </div>
+
+            {{ $propietarios->links() }}
         @endif
     </div>
 @endsection
